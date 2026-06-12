@@ -380,10 +380,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <div class="modal-title" id="im-title">➕ เพิ่มสินค้าใหม่</div>
     <div class="fl"><label>รูปสินค้า</label>
       <div class="photo-row">
-        <div class="photo-preview" id="im-photo-preview" onclick="document.getElementById('im-photo-input').click()">📷<span>ถ่ายรูป</span></div>
+        <div class="photo-preview" id="im-photo-preview" onclick="document.getElementById('im-photo-album').click()">📷<span>เพิ่มรูป</span></div>
         <input type="file" id="im-photo-input" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelect(event)">
+        <input type="file" id="im-photo-album" accept="image/*" style="display:none" onchange="onPhotoSelect(event)">
         <div style="display:flex;flex-direction:column;gap:6px;">
-          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('im-photo-input').click()">📷 ถ่ายรูป / เลือกรูป</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('im-photo-input').click()">📷 ถ่ายรูป</button>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('im-photo-album').click()">🖼️ เลือกจากอัลบั้ม</button>
           <button type="button" class="btn btn-sm" id="im-photo-remove" style="display:none;background:var(--red-lt);color:var(--red);border:1px solid rgba(212,64,48,.3)" onclick="removePhoto()">🗑 ลบรูป</button>
         </div>
       </div>
@@ -739,7 +741,7 @@ function showPhotoPreview(dataUrl) {
     el.classList.add('has-photo');
     document.getElementById('im-photo-remove').style.display = 'flex';
   } else {
-    el.innerHTML = '📷<span>ถ่ายรูป</span>';
+    el.innerHTML = '📷<span>เพิ่มรูป</span>';
     el.classList.remove('has-photo');
     document.getElementById('im-photo-remove').style.display = 'none';
   }
