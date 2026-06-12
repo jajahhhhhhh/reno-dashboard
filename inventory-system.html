@@ -101,7 +101,28 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .badge-both{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(154,96,212,.2);}
 
 .ic-mid{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.ic-icon{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ic-icon{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;}
+.ic-icon img{width:100%;height:100%;object-fit:cover;}
+
+/* PHOTO CAPTURE */
+.photo-row{display:flex;gap:12px;align-items:center;}
+.photo-preview{
+  width:88px;height:88px;border-radius:var(--r-sm);
+  border:1.5px dashed var(--border2);background:var(--bg2);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:22px;color:var(--muted2);cursor:pointer;overflow:hidden;
+  transition:border-color .15s;flex-shrink:0;
+}
+.photo-preview:hover{border-color:var(--lipa);}
+.photo-preview span{font-size:9px;margin-top:2px;}
+.photo-preview img{width:100%;height:100%;object-fit:cover;}
+.photo-preview.has-photo{border-style:solid;border-color:var(--green);}
+.photo-viewer{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:400;
+  align-items:center;justify-content:center;cursor:zoom-out;
+}
+.photo-viewer.open{display:flex;}
+.photo-viewer img{max-width:94vw;max-height:88vh;border-radius:8px;}
 .ic-cat{font-size:10px;color:var(--muted);margin-top:2px;}
 .ic-loc{font-size:10px;color:var(--muted2);margin-top:1px;}
 
@@ -357,6 +378,16 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="im-title">➕ เพิ่มสินค้าใหม่</div>
+    <div class="fl"><label>รูปสินค้า</label>
+      <div class="photo-row">
+        <div class="photo-preview" id="im-photo-preview" onclick="document.getElementById('im-photo-input').click()">📷<span>ถ่ายรูป</span></div>
+        <input type="file" id="im-photo-input" accept="image/*" capture="environment" style="display:none" onchange="onPhotoSelect(event)">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('im-photo-input').click()">📷 ถ่ายรูป / เลือกรูป</button>
+          <button type="button" class="btn btn-sm" id="im-photo-remove" style="display:none;background:var(--red-lt);color:var(--red);border:1px solid rgba(212,64,48,.3)" onclick="removePhoto()">🗑 ลบรูป</button>
+        </div>
+      </div>
+    </div>
     <div class="fl"><label>ชื่อสินค้า *</label><input class="fi" id="im-name" placeholder="เช่น โคมไฟเพดาน LED 24W"></div>
     <div class="fg2">
       <div class="fl"><label>SKU / รหัส</label><input class="fi" id="im-sku" placeholder="AUTO"></div>
@@ -442,6 +473,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
   </div>
 </div>
 
+<div class="photo-viewer" id="photo-viewer" onclick="this.classList.remove('open')"><img id="photo-viewer-img" src=""></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -473,6 +506,33 @@ const CAT_CLASS = {
 
 // ══ SAMPLE DATA ══
 const SAMPLE_ITEMS = [
+  // ── จากบิล HomePro 629208 — 17/05/69 เครื่องใช้ไฟฟ้า Airbnb ──
+  {id:'ITM-HP020',sku:'2400002244187',name:'ไมโครเวฟ ELECTROLUX EMM20K22B 20L',cat:'เฟอร์นิเจอร์',icon:'📦',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:1790,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
+  {id:'ITM-HP021',sku:'2400002866259',name:'กาต้มน้ำไฟฟ้า EKONO EK01 สีเงิน',cat:'เฟอร์นิเจอร์',icon:'☕',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:199,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
+  {id:'ITM-HP022',sku:'2400002950330',name:'ตู้เย็น 2 ประตู HISENSE RT549N4TBN 15Q สีดำ',cat:'เฟอร์นิเจอร์',icon:'🧊',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:8490,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69 ลด ฿1,300'},
+  {id:'ITM-HP023',sku:'2400002957520',name:'เครื่องดูดฝุ่นและดูดน้ำ EKONO WD20L',cat:'เครื่องมือ',icon:'🌀',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:1290,loc:'เฉวง',note:'HomePro 629208 17/05/69'},
+
+  // ── จากบิล HomePro 637187 — 25/05/69 ของแต่ง Airbnb ──
+  {id:'ITM-HP024',sku:'2400003145834',name:'หุ่นยนต์ดูดฝุ่น XIAOMI ROBOT VACUUM 5',cat:'เครื่องมือ',icon:'🤖',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:16990,loc:'เฉวง Airbnb',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP025',sku:'2400003113475',name:'เก้าอี้เพื่อสุขภาพ AERO NET สีดำ',cat:'เฟอร์นิเจอร์',icon:'🪑',proj:'Chaweng',qty:1,minQty:1,unit:'ตัว',price:3990,loc:'เฉวง',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP026',sku:'2400002914547',name:'เครื่องดูดไรฝุ่น XIAOMI XMI-BHR8279TH',cat:'เครื่องมือ',icon:'🌀',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:1490,loc:'เฉวง Airbnb',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP027',sku:'2400003226496',name:'สายรัดข้อมืออัจฉริยะ XIAOMI BAND 10 ชมพู',cat:'อื่นๆ',icon:'⌚',proj:'Chaweng',qty:1,minQty:1,unit:'เส้น',price:1449,loc:'—',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP028',sku:'2400002702960',name:'ราวแขวนผ้าบาร์คู่ปรับระดับ 81×43×90 ซม. ขาว',cat:'เฟอร์นิเจอร์',icon:'👕',proj:'Chaweng',qty:1,minQty:1,unit:'ชุด',price:699,loc:'เฉวง ซักรีด',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP029',sku:'2400002767334',name:'มู่ลี่แบบจีบ TROFY 100×190 ซม. สีเทา',cat:'เฟอร์นิเจอร์',icon:'🪟',proj:'Chaweng',qty:3,minQty:1,unit:'ชุด',price:170,loc:'เฉวง Airbnb',note:'HomePro 637187 25/05/69 ลด 10%'},
+  {id:'ITM-HP030',sku:'2400002990589',name:'สตูลกลม PLEATOVAL สีน้ำตาลอ่อน',cat:'เฟอร์นิเจอร์',icon:'🪑',proj:'Chaweng',qty:1,minQty:1,unit:'ตัว',price:390,loc:'เฉวง Airbnb',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP031',sku:'8851143096441',name:'สติ๊กเกอร์ D502 45CM×5M',cat:'อื่นๆ',icon:'🎨',proj:'Chaweng',qty:2,minQty:1,unit:'ม้วน',price:149,loc:'เฉวง',note:'HomePro 637187 25/05/69 ลด 10%'},
+  {id:'ITM-HP032',sku:'8851143460402',name:'ถุงคลุมเครื่องซักผ้าฝาหน้า L เทา',cat:'อื่นๆ',icon:'🧺',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:279,loc:'เฉวง ซักรีด',note:'HomePro 637187 25/05/69'},
+  {id:'ITM-HP033',sku:'2400002641184',name:'ชั้นเข้ามุม MAKEUP BREIS 25.5×25.5×11 ใส',cat:'เฟอร์นิเจอร์',icon:'🗄️',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:147,loc:'เฉวง Airbnb',note:'HomePro 637187 25/05/69'},
+
+  // ── จากบิล PEMCO Lamptitude 02/06/69 (ส่งถึงสมุย 04/06) ──
+  {id:'ITM-PM001',sku:'85825',name:'WALL LAMP : STICKER (PEMCO Lamptitude)',cat:'โคมไฟ',icon:'🏮',proj:'Chaweng',qty:9,minQty:2,unit:'ชุด',price:195,loc:'เฉวง',note:'PEMCO UD2-26060102 02/06/69 ลด 70% จาก ฿650 — รวม ฿1,755'},
+  {id:'ITM-PM002',sku:'DZ2-1601P-PRD-NLB',name:'PENDANT : DZ2/RD T5x1 MAX28W (โคมแขวน)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:1,minQty:1,unit:'ชุด',price:1410,loc:'เฉวง',note:'PEMCO UD2-26060102 ลด 70% จาก ฿4,700'},
+  {id:'ITM-PM003',sku:'78283001',name:'PENDANT : PURE/WH E27x1 MAX40W (โคมแขวนขาว)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:2,minQty:1,unit:'ชุด',price:1050,loc:'เฉวง',note:'PEMCO UD2-26060102 ลด 70% จาก ฿3,500/ชุด — รวม ฿2,100'},
+  {id:'ITM-PM004',sku:'ISSY-CS-WH',name:'CEILING LAMP : ISSY ALUMINUM GU10x1 D200×H180 SANDED WHITE',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:1,minQty:1,unit:'ชุด',price:660,loc:'เฉวง',note:'PEMCO UD2-26060102 ลด 70% จาก ฿2,200'},
+
+  // ── จากบิล Global House 11/06/69 ──
+  {id:'ITM-GH002',sku:'GDD-8767',name:'EILON โคมติดผนังทรงกลม ขั้ว E14 ฐานสีดำ โคมสีขาวขุ่น',cat:'โคมไฟ',icon:'🏮',proj:'Chaweng',qty:1,minQty:1,unit:'ดวง',price:490,loc:'สาขาสมุย รอรับ',note:'Global House Order #202606111075727 11/06/69 ThaiQR'},
+
   // ── จากบิล Global House 10/06/69 ──
   {id:'ITM-GH001',sku:'ELTD-TJ04-07DW',name:'EILON ดาวน์ไลท์ฝังฝ้า LED 4นิ้ว 7W ปรับได้ 3 แสง สีขาว',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:10,minQty:4,unit:'ดวง',price:125,loc:'โกดังเฉวง',note:'Global House 10/06/69 ฿1,250 รวมส่วนลด | SKU: 8859240311527'},
 
@@ -549,13 +609,14 @@ function renderStock() {
     const projLabel = i.proj==='Lipa'?'🏠 ลิปะ':i.proj==='Chaweng'?'🏢 เฉวง':'🏝 ทั้งคู่';
     const icon = i.icon||CAT_ICONS[i.cat]||'📦';
     const catCls = CAT_CLASS[i.cat]||'cat-other';
+    const iconHtml = i.photo ? `<img src="${i.photo}" alt="">` : icon;
     return`<div class="item-card ${cls}" onclick="openTxModal('${i.id}')">
       <div class="ic-top">
         <div><div class="ic-name">${i.name}</div><div class="ic-sku">${i.sku}</div></div>
         <div class="ic-badge ${projBadge}">${projLabel}</div>
       </div>
       <div class="ic-mid">
-        <div class="ic-icon ${catCls}">${icon}</div>
+        <div class="ic-icon ${catCls}" ${i.photo?`onclick="event.stopPropagation();viewPhoto('${i.id}')" style="cursor:zoom-in"`:''}>${iconHtml}</div>
         <div class="ic-stock">
           <div class="stock-nums">
             <div><span class="stock-qty ${qtyCls}">${i.qty}</span><span class="stock-unit">${i.unit}</span></div>
@@ -636,9 +697,70 @@ function renderQrGrid() {
     </div>`).join('');
 }
 
+// ══ PHOTO CAPTURE ══
+let currentPhoto = null;
+
+function onPhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  compressImage(file, dataUrl => {
+    currentPhoto = dataUrl;
+    showPhotoPreview(dataUrl);
+    toast('📷 ถ่ายรูปแล้ว','green');
+  });
+  e.target.value = '';
+}
+
+function compressImage(file, cb) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 360;
+      let w = img.width, h = img.height;
+      if (Math.max(w,h) > MAX) {
+        const r = MAX/Math.max(w,h);
+        w = Math.round(w*r); h = Math.round(h*r);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      cb(canvas.toDataURL('image/jpeg', 0.62));
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showPhotoPreview(dataUrl) {
+  const el = document.getElementById('im-photo-preview');
+  if (dataUrl) {
+    el.innerHTML = `<img src="${dataUrl}">`;
+    el.classList.add('has-photo');
+    document.getElementById('im-photo-remove').style.display = 'flex';
+  } else {
+    el.innerHTML = '📷<span>ถ่ายรูป</span>';
+    el.classList.remove('has-photo');
+    document.getElementById('im-photo-remove').style.display = 'none';
+  }
+}
+
+function removePhoto() {
+  currentPhoto = null;
+  showPhotoPreview(null);
+}
+
+function viewPhoto(id) {
+  const item = ITEMS.find(i=>i.id===id);
+  if (!item?.photo) return;
+  document.getElementById('photo-viewer-img').src = item.photo;
+  document.getElementById('photo-viewer').classList.add('open');
+}
+
 // ══ ITEM MODAL ══
 function openAddItem() {
   editItemId=null;
+  currentPhoto=null; showPhotoPreview(null);
   document.getElementById('im-title').textContent='➕ เพิ่มสินค้าใหม่';
   document.getElementById('del-item-btn').style.display='none';
   ['im-name','im-sku','im-icon','im-loc','im-note'].forEach(id=>document.getElementById(id).value='');
@@ -654,6 +776,7 @@ function openAddItem() {
 function openEditItem(id) {
   const item=ITEMS.find(i=>i.id===id); if(!item) return;
   editItemId=id;
+  currentPhoto=item.photo||null; showPhotoPreview(currentPhoto);
   document.getElementById('im-title').textContent='✏️ แก้ไขสินค้า';
   document.getElementById('del-item-btn').style.display='flex';
   document.getElementById('im-name').value=item.name;
@@ -672,7 +795,7 @@ function openEditItem(id) {
 function saveItem() {
   const name=document.getElementById('im-name').value.trim(); if(!name) return;
   const sku=document.getElementById('im-sku').value.trim()||'ITM'+Date.now().toString().slice(-4);
-  const d={name,sku,cat:document.getElementById('im-cat').value,proj:document.getElementById('im-proj').value,icon:document.getElementById('im-icon').value.trim()||CAT_ICONS[document.getElementById('im-cat').value]||'📦',qty:parseInt(document.getElementById('im-qty').value)||0,unit:document.getElementById('im-unit').value||'ชิ้น',minQty:parseInt(document.getElementById('im-min').value)||2,price:parseFloat(document.getElementById('im-price').value)||0,loc:document.getElementById('im-loc').value.trim(),note:document.getElementById('im-note').value.trim()};
+  const d={name,sku,cat:document.getElementById('im-cat').value,proj:document.getElementById('im-proj').value,icon:document.getElementById('im-icon').value.trim()||CAT_ICONS[document.getElementById('im-cat').value]||'📦',qty:parseInt(document.getElementById('im-qty').value)||0,unit:document.getElementById('im-unit').value||'ชิ้น',minQty:parseInt(document.getElementById('im-min').value)||2,price:parseFloat(document.getElementById('im-price').value)||0,loc:document.getElementById('im-loc').value.trim(),note:document.getElementById('im-note').value.trim(),photo:currentPhoto||null};
   if(editItemId){const i=ITEMS.findIndex(x=>x.id===editItemId);ITEMS[i]={...ITEMS[i],...d};}
   else{ITEMS.push({...d,id:'ITM'+Date.now()});}
   save();closeModal('item-ov');renderAll();toast(editItemId?'✅ แก้ไขแล้ว':'✅ เพิ่มสินค้าแล้ว','green');
@@ -851,7 +974,7 @@ function showView(name,el) {
 // ══ HELPERS ══
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function renderAll(){renderStock();renderAlerts();}
-function save(){try{localStorage.setItem('stock_items',JSON.stringify(ITEMS));localStorage.setItem('stock_txs',JSON.stringify(TXS));}catch(e){}}
+function save(){try{localStorage.setItem('stock_items',JSON.stringify(ITEMS));localStorage.setItem('stock_txs',JSON.stringify(TXS));}catch(e){if(e.name==='QuotaExceededError'){toast('⚠️ พื้นที่เก็บรูปเต็ม — ลบรูปเก่าบางรายการ','red');}}}
 function load(){try{const i=localStorage.getItem('stock_items');const t=localStorage.getItem('stock_txs');if(i)ITEMS=JSON.parse(i);if(t)TXS=JSON.parse(t);}catch(e){}}
 
 let _tt=null;
