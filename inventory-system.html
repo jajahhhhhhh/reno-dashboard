@@ -99,6 +99,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .badge-lipa{background:var(--lipa-lt);color:var(--lipa);border:1px solid rgba(232,144,58,.2);}
 .badge-chaweng{background:var(--chaweng-lt);color:var(--chaweng);border:1px solid rgba(74,142,196,.2);}
 .badge-both{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(154,96,212,.2);}
+.badge-stock{background:var(--green-lt);color:var(--green);border:1px solid rgba(82,196,122,.2);}
 
 .ic-mid{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
 .ic-icon{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;}
@@ -297,6 +298,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <option value="Lipa">🏠 ลิปะ</option>
       <option value="Chaweng">🏢 เฉวง</option>
       <option value="Both">🏝 ทั้งคู่</option>
+      <option value="Stock">📦 คงคลัง</option>
     </select>
   </div>
   <div class="grid" id="stock-grid"></div>
@@ -332,6 +334,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         <select class="fsel" id="scan-proj">
           <option value="Lipa">🏠 ลิปะ</option>
           <option value="Chaweng">🏢 เฉวง</option>
+          <option value="Stock">📦 คงคลัง</option>
         </select>
       </div>
       <div style="display:flex;gap:8px;justify-content:center;">
@@ -362,6 +365,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <option value="">ทุกโครงการ</option>
       <option value="Lipa">🏠 ลิปะ</option>
       <option value="Chaweng">🏢 เฉวง</option>
+      <option value="Stock">📦 คงคลัง</option>
     </select>
   </div>
   <div id="tx-list"></div>
@@ -406,6 +410,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
           <option value="Lipa">🏠 ลิปะน้อย</option>
           <option value="Chaweng">🏢 เฉวง 3 ชั้น</option>
           <option value="Both">🏝 ทั้งสองที่</option>
+          <option value="Stock">📦 คงคลัง (ยังไม่ระบุ)</option>
         </select>
       </div>
       <div class="fl"><label>ไอคอน</label><input class="fi" id="im-icon" placeholder="💡" maxlength="4"></div>
@@ -449,6 +454,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
         <select class="fs" id="txm-proj">
           <option value="Lipa">🏠 ลิปะ</option>
           <option value="Chaweng">🏢 เฉวง</option>
+          <option value="Stock">📦 คงคลัง</option>
         </select>
       </div>
       <div class="fl"><label>วันที่</label><input class="fi" id="txm-date" type="date"></div>
@@ -607,8 +613,8 @@ function renderStock() {
     const cls = i.qty===0?'out-stock':i.qty<=i.minQty?'low-stock':'ok-stock';
     const qtyCls = i.qty===0?'out':i.qty<=i.minQty?'low':'ok';
     const barColor = i.qty===0?'var(--red)':i.qty<=i.minQty?'var(--warn)':'var(--green)';
-    const projBadge = i.proj==='Lipa'?'badge-lipa':i.proj==='Chaweng'?'badge-chaweng':'badge-both';
-    const projLabel = i.proj==='Lipa'?'🏠 ลิปะ':i.proj==='Chaweng'?'🏢 เฉวง':'🏝 ทั้งคู่';
+    const projBadge = i.proj==='Lipa'?'badge-lipa':i.proj==='Chaweng'?'badge-chaweng':i.proj==='Stock'?'badge-stock':'badge-both';
+    const projLabel = i.proj==='Lipa'?'🏠 ลิปะ':i.proj==='Chaweng'?'🏢 เฉวง':i.proj==='Stock'?'📦 คงคลัง':'🏝 ทั้งคู่';
     const icon = i.icon||CAT_ICONS[i.cat]||'📦';
     const catCls = CAT_CLASS[i.cat]||'cat-other';
     const iconHtml = i.photo ? `<img src="${i.photo}" alt="">` : icon;
@@ -656,7 +662,7 @@ function renderTx() {
     const typeIcon = t.type==='in'?'📥':t.type==='out'?'📤':'🔧';
     const typeLabel = t.type==='in'?'ซื้อเข้า':t.type==='out'?'เบิกออก':'ปรับยอด';
     const sign = t.type==='in'?'+':t.type==='out'?'−':'±';
-    const projCls = t.proj==='Lipa'?'badge-lipa':'badge-chaweng';
+    const projCls = t.proj==='Lipa'?'badge-lipa':t.proj==='Stock'?'badge-stock':'badge-chaweng';
     return`<div class="tx-row ${typeCls}">
       <div class="tx-icon">${typeIcon}</div>
       <div class="tx-info">
@@ -665,7 +671,7 @@ function renderTx() {
       </div>
       <div>
         <div class="tx-qty">${sign}${t.qty} ${item?.unit||''}</div>
-        <div style="text-align:right;margin-top:2px"><span class="tx-proj ic-badge ${projCls}">${t.proj==='Lipa'?'ลิปะ':'เฉวง'}</span></div>
+        <div style="text-align:right;margin-top:2px"><span class="tx-proj ic-badge ${projCls}">${t.proj==='Lipa'?'ลิปะ':t.proj==='Stock'?'คงคลัง':'เฉวง'}</span></div>
       </div>
     </div>`;
   }).join('');
