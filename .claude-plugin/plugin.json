@@ -1,0 +1,17 @@
+{
+  "name": "reno-dashboard",
+  "version": "0.1.0",
+  "description": "Manage a multi-site home renovation project from chat — Kanban tasks, payment tracking, QR inventory, weekly briefs, and LINE/bill ingestion. Reads and writes the dashboard HTML files (tasks, payments, stock) so the owner can update everything by talking, not clicking.",
+  "author": {
+    "name": "J — Koh Samui"
+  },
+  "keywords": [
+    "renovation",
+    "construction",
+    "kanban",
+    "inventory",
+    "thai",
+    "project-management"
+  ],
+  "license": "MIT"
+}
