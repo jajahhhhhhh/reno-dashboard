@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard J — ลิปะ & เฉวง</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0F0E0C;--bg2:#161410;--surface:#1E1B16;--surface2:#262218;--surface3:#2E2920;
+  --border:#3A342A;--border2:#464034;
+  --text:#F0EBE0;--muted:#8A8070;--muted2:#5A5448;
+  --lipa:#E8943A;--lipa-lt:#3A2010;--lipa-dim:#C07828;
+  --chaweng:#4A8EC4;--chaweng-lt:#0E2030;--chaweng-dim:#3A7AAE;
+  --green:#4CAF7A;--green-lt:#0E2018;
+  --warn:#D4A020;--warn-lt:#2A1E08;
+  --danger:#D44030;--danger-lt:#2A0E0A;
+  --done:#4CAF7A;--todo:#8A8070;--inprog:#4A8EC4;--review:#D4A020;
+  --shadow:0 2px 12px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 40px rgba(0,0,0,.6);
+  --r:10px;--r-sm:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px;}
+
+/* HEADER */
+.hdr{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+}
+.hdr-logo{font-family:'DM Serif Display',serif;font-size:17px;color:var(--text);display:flex;align-items:center;gap:10px;}
+.hdr-logo em{color:var(--lipa);font-style:normal;}
+.hdr-logo .sep{width:1px;height:16px;background:var(--border2);}
+.hdr-logo small{font-family:'Sarabun',sans-serif;font-size:11px;color:var(--muted);font-weight:400;}
+.hdr-r{display:flex;align-items:center;gap:8px;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .15s;font-family:'Sarabun',sans-serif;}
+.btn-lipa{background:var(--lipa);color:#0F0E0C;}
+.btn-lipa:hover{background:var(--lipa-dim);}
+.btn-chaweng{background:var(--chaweng);color:#0F0E0C;}
+.btn-chaweng:hover{background:var(--chaweng-dim);}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border2);}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.btn-green{background:var(--green);color:#0F0E0C;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+/* PROJECT TABS */
+.proj-tabs{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  display:flex;align-items:stretch;
+  position:sticky;top:52px;z-index:190;
+}
+.proj-tab{
+  flex:1;padding:0 20px;height:44px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:13px;font-weight:600;cursor:pointer;
+  border-bottom:2px solid transparent;transition:all .18s;
+  color:var(--muted);
+}
+.proj-tab.lipa-tab:hover,.proj-tab.lipa-tab.active{color:var(--lipa);border-bottom-color:var(--lipa);background:var(--lipa-lt);}
+.proj-tab.chaweng-tab:hover,.proj-tab.chaweng-tab.active{color:var(--chaweng);border-bottom-color:var(--chaweng);background:var(--chaweng-lt);}
+.proj-tab.both-tab:hover,.proj-tab.both-tab.active{color:var(--text);border-bottom-color:var(--text);background:var(--surface);}
+.proj-badge{font-size:10px;font-weight:700;padding:1px 5px;border-radius:6px;}
+.lipa-badge{background:var(--lipa-lt);color:var(--lipa);border:1px solid rgba(232,148,58,.3);}
+.chaweng-badge{background:var(--chaweng-lt);color:var(--chaweng);border:1px solid rgba(74,142,196,.3);}
+
+/* NAV */
+.nav-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 20px;display:flex;align-items:center;gap:2px;
+}
+.nav-item{padding:10px 14px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.nav-item:hover{color:var(--text);}
+.nav-item.active{color:var(--text);border-bottom-color:var(--text);}
+
+/* AI STRIP */
+.ai-strip{
+  background:linear-gradient(90deg,var(--lipa-lt) 0%,var(--bg2) 40%,var(--chaweng-lt) 100%);
+  border-bottom:1px solid var(--border);
+  padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.ai-strip-l{display:flex;align-items:center;gap:10px;}
+.ai-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--lipa),var(--chaweng));display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.ai-title{font-size:13px;font-weight:700;color:var(--text);}
+.ai-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.ai-strip-r{display:flex;align-items:center;gap:8px;}
+.drop-zone{border:1.5px dashed var(--border2);border-radius:var(--r-sm);padding:7px 14px;color:var(--muted);font-size:12px;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.03);display:flex;align-items:center;gap:6px;}
+.drop-zone:hover,.drop-zone.dov{border-color:var(--lipa);color:var(--lipa);background:var(--lipa-lt);}
+.drop-zone input{display:none;}
+
+/* AI STATUS */
+.ai-sts{padding:8px 20px;font-size:12px;display:none;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.ai-sts.show{display:flex;}
+.ai-sts.proc{background:var(--warn-lt);color:var(--warn);}
+.ai-sts.ok{background:var(--green-lt);color:var(--green);}
+.ai-sts.err{background:var(--danger-lt);color:var(--danger);}
+.spin{animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUMMARY CARDS */
+.summary-row{padding:14px 20px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border-bottom:1px solid var(--border);}
+.sum-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;}
+.sum-card.lipa-card{border-left:3px solid var(--lipa);}
+.sum-card.chaweng-card{border-left:3px solid var(--chaweng);}
+.sum-card.total-card{border-left:3px solid var(--green);}
+.sum-card.task-card{border-left:3px solid var(--warn);}
+.sum-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;}
+.sum-val{font-family:'DM Serif Display',serif;font-size:20px;color:var(--text);}
+.sum-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+.sum-sub .up{color:var(--danger);}
+.sum-sub .dn{color:var(--green);}
+
+/* VIEWS */
+.view{display:none;}
+.view.active{display:block;animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* KANBAN */
+.kb-toolbar{padding:10px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.fb{padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--muted);transition:all .13s;font-family:'Sarabun',sans-serif;}
+.fb.active-lipa{background:var(--lipa-lt);border-color:var(--lipa);color:var(--lipa);}
+.fb.active-chaweng{background:var(--chaweng-lt);border-color:var(--chaweng);color:var(--chaweng);}
+.fb.active-all{background:var(--surface2);border-color:var(--border2);color:var(--text);}
+.fb:hover:not([class*="active"]){background:var(--surface2);color:var(--text);}
+.srch{padding:5px 10px 5px 26px;border-radius:var(--r-sm);border:1px solid var(--border2);background:var(--bg);font-size:11px;color:var(--text);outline:none;width:150px;font-family:'Sarabun',sans-serif;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%238A8070' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:8px center;}
+.srch:focus{border-color:var(--lipa);}
+
+.board-wrap{padding:16px 20px;overflow-x:auto;}
+.board{display:grid;grid-template-columns:repeat(4,260px);gap:12px;min-width:max-content;align-items:start;}
+
+.col{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);display:flex;flex-direction:column;}
+.col-hdr{padding:11px 12px 8px;display:flex;align-items:center;justify-content:space-between;}
+.col-l{display:flex;align-items:center;gap:6px;}
+.col-dot{width:7px;height:7px;border-radius:50%;}
+.col[data-col="Todo"] .col-dot{background:var(--todo);}
+.col[data-col="In Progress"] .col-dot{background:var(--inprog);}
+.col[data-col="Review"] .col-dot{background:var(--review);}
+.col[data-col="Done"] .col-dot{background:var(--done);}
+.col-name{font-size:11px;font-weight:700;color:var(--text);}
+.col-ct{background:var(--surface3);color:var(--muted);font-size:10px;font-weight:700;padding:1px 5px;border-radius:6px;}
+.col-sum{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+
+.cards{padding:2px 7px 7px;min-height:50px;}
+.cards.dov{background:rgba(232,148,58,.07);border-radius:6px;}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:11px;margin-bottom:7px;cursor:grab;transition:box-shadow .13s,transform .13s,opacity .13s;position:relative;user-select:none;}
+.card:last-child{margin-bottom:0;}
+.card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.card.dragging{opacity:.3;transform:scale(.96);}
+.card.highlight{animation:hl .6s ease;}
+@keyframes hl{0%{background:rgba(232,148,58,.2)}100%{background:var(--surface)}}
+
+.c-pri{position:absolute;top:0;left:0;bottom:0;width:3px;border-radius:var(--r) 0 0 var(--r);}
+.pri-High{background:var(--danger);}
+.pri-Medium{background:var(--warn);}
+.pri-Low{background:var(--green);}
+
+.c-proj{position:absolute;top:6px;right:6px;width:6px;height:6px;border-radius:50%;}
+.proj-Lipa{background:var(--lipa);}
+.proj-Chaweng{background:var(--chaweng);}
+
+.c-head{display:flex;align-items:flex-start;gap:6px;margin-bottom:5px;padding-left:6px;}
+.c-title{font-size:12px;font-weight:600;line-height:1.4;flex:1;cursor:text;padding:1px 3px;border-radius:3px;color:var(--text);}
+.c-title:hover{background:var(--surface2);}
+.c-title[contenteditable="true"]{background:var(--bg);outline:none;box-shadow:0 0 0 2px var(--lipa);}
+.c-acts{display:flex;gap:1px;opacity:0;transition:opacity .13s;flex-shrink:0;}
+.card:hover .c-acts{opacity:1;}
+.ca{width:18px;height:18px;border-radius:3px;border:none;background:transparent;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:10px;}
+.ca:hover{background:var(--surface2);color:var(--text);}
+
+.c-note{font-size:11px;color:var(--muted);line-height:1.5;margin:0 0 7px 9px;cursor:text;padding:2px 3px;border-radius:3px;min-height:14px;}
+.c-note:hover{background:var(--surface2);}
+.c-note[contenteditable="true"]{background:var(--bg);outline:none;box-shadow:0 0 0 2px var(--lipa);}
+.c-note:empty::before{content:'เพิ่มโน้ต…';color:var(--border2);font-style:italic;font-size:10px;}
+
+.c-foot{display:flex;align-items:center;justify-content:space-between;padding-left:9px;flex-wrap:wrap;gap:4px;}
+.c-tags{display:flex;align-items:center;gap:3px;flex-wrap:wrap;}
+.tag{font-size:9px;font-weight:700;padding:2px 5px;border-radius:6px;text-transform:uppercase;white-space:nowrap;}
+.tag-lipa{background:var(--lipa-lt);color:var(--lipa);border:1px solid rgba(232,148,58,.25);}
+.tag-chaweng{background:var(--chaweng-lt);color:var(--chaweng);border:1px solid rgba(74,142,196,.25);}
+.tag-elec{background:#1A1028;color:#A080E0;border:1px solid rgba(160,128,224,.2);}
+.tag-plumb{background:#0A1A14;color:#40C080;border:1px solid rgba(64,192,128,.2);}
+.tag-demo{background:#1A0A08;color:#E06050;border:1px solid rgba(224,96,80,.2);}
+.tag-struct{background:#101A08;color:#80C040;border:1px solid rgba(128,192,64,.2);}
+.tag-finish{background:#1A1408;color:#C0A040;border:1px solid rgba(192,160,64,.2);}
+.tag-gen{background:var(--surface2);color:var(--muted);}
+.c-cost{font-family:'DM Mono',monospace;font-size:10px;font-weight:700;color:var(--lipa);}
+.c-r{display:flex;align-items:center;gap:4px;}
+.c-date{font-size:9px;color:var(--muted);}
+.c-av{width:18px;height:18px;border-radius:50%;font-size:7px;font-weight:800;color:#0F0E0C;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--surface);}
+
+.add-btn{width:calc(100% - 14px);margin:0 7px 8px;padding:6px;border-radius:var(--r-sm);background:transparent;border:1.5px dashed var(--border);color:var(--muted2);font-size:11px;cursor:pointer;transition:all .13s;font-family:'Sarabun',sans-serif;display:flex;align-items:center;justify-content:center;gap:4px;}
+.add-btn:hover{background:var(--surface);border-color:var(--lipa);color:var(--lipa);}
+.col-empty{text-align:center;padding:16px 8px;color:var(--border2);font-size:11px;}
+
+/* PAYMENTS */
+.pay-wrap{padding:18px 20px;}
+.pay-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.pay-title{font-family:'DM Serif Display',serif;font-size:20px;}
+.pay-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.pay-proj{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.pay-proj-hdr{padding:11px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.pay-proj-name{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;}
+.pay-proj-total{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;}
+.pay-row{display:grid;grid-template-columns:70px 1fr 90px 70px;gap:8px;padding:9px 14px;border-bottom:1px solid var(--surface3);align-items:center;}
+.pay-row:last-child{border-bottom:none;}
+.pay-row.hdr-row{background:var(--surface3);font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+.p-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.p-desc{font-size:11px;}
+.p-amt{font-family:'DM Mono',monospace;font-size:11px;font-weight:700;text-align:right;}
+.p-amt.red{color:var(--danger);}
+.p-amt.muted{color:var(--muted);}
+.p-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;text-align:center;}
+.paid-b{background:var(--green-lt);color:var(--green);border:1px solid rgba(76,175,122,.2);}
+.pend-b{background:var(--warn-lt);color:var(--warn);border:1px solid rgba(212,160,32,.2);}
+
+/* LOG */
+.log-wrap{padding:18px 20px;}
+.log-entry{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;}
+.log-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.log-time{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.log-src{font-size:10px;background:var(--lipa-lt);color:var(--lipa);padding:2px 7px;border-radius:6px;font-weight:700;}
+.log-changes{display:flex;flex-direction:column;gap:5px;}
+.log-ch{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:var(--text);}
+.log-empty{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+
+/* MODAL */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
+.ov.open{display:flex;animation:pop .18s ease;}
+@keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:var(--r);padding:22px;width:460px;max-width:92vw;box-shadow:var(--shadow-lg);max-height:88vh;overflow-y:auto;}
+.modal-title{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:14px;color:var(--text);}
+.fl{margin-bottom:11px;}
+.fl label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:4px;}
+.fi,.fs,.fta{width:100%;padding:8px 11px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--bg2);font-family:'Sarabun',sans-serif;font-size:12px;color:var(--text);outline:none;transition:border-color .15s;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--lipa);}
+.fta{resize:vertical;min-height:56px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* PREVIEW */
+.prev-item{display:flex;align-items:flex-start;gap:9px;padding:9px;border-radius:var(--r-sm);border:1px solid var(--border);margin-bottom:6px;background:var(--bg2);}
+.prev-ico{font-size:15px;flex-shrink:0;}
+.prev-txt{flex:1;font-size:11px;line-height:1.55;color:var(--text);}
+.prev-chk{width:15px;height:15px;border-radius:3px;border:1.5px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .13s;}
+.prev-chk.on{background:var(--green);border-color:var(--green);color:#0F0E0C;font-size:8px;}
+
+/* RECEIPT STRIP */
+.receipt-strip{background:var(--surface3);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px;}
+.receipt-title{font-size:11px;font-weight:700;color:var(--warn);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.receipt-row{display:flex;justify-content:space-between;font-size:11px;padding:3px 0;border-bottom:1px solid var(--border);}
+.receipt-row:last-child{border:none;font-weight:700;color:var(--text);padding-top:6px;}
+.receipt-row span:last-child{font-family:'DM Mono',monospace;color:var(--lipa);}
+
+/* TOAST */
+.toast{position:fixed;bottom:16px;right:16px;z-index:999;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:10px 15px;border-radius:var(--r);font-size:12px;font-weight:500;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:7px;transform:translateY(60px);opacity:0;transition:all .26s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.td{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.td.err{background:var(--danger);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">
+    Dashboard<em>J</em>
+    <span class="sep"></span>
+    <small>🏝️ Koh Samui Renovation</small>
+  </div>
+  <div class="hdr-r">
+    <button class="btn btn-ghost btn-sm" onclick="openAddCard()">+ งาน</button>
+    <button class="btn btn-ghost btn-sm" onclick="openAddPay()">+ จ่ายเงิน</button>
+  </div>
+</div>
+
+<!-- PROJECT TABS -->
+<div class="proj-tabs">
+  <div class="proj-tab both-tab active" id="ptab-both" onclick="setProj('both',this)">
+    🏝️ ทั้งสองที่
+    <span class="proj-badge" style="background:var(--surface2);color:var(--muted);border:1px solid var(--border2)" id="badge-both">0</span>
+  </div>
+  <div class="proj-tab lipa-tab" id="ptab-lipa" onclick="setProj('lipa',this)">
+    🏠 ลิปะน้อย
+    <span class="proj-badge lipa-badge" id="badge-lipa">0</span>
+  </div>
+  <div class="proj-tab chaweng-tab" id="ptab-chaweng" onclick="setProj('chaweng',this)">
+    🏢 เฉวง 3 ชั้น
+    <span class="proj-badge chaweng-badge" id="badge-chaweng">0</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav-bar">
+  <div class="nav-item active" id="nav-kanban" onclick="showView('kanban',this)">📋 Kanban</div>
+  <div class="nav-item" id="nav-payments" onclick="showView('payments',this)">💰 การเงิน</div>
+  <div class="nav-item" id="nav-log" onclick="showView('log',this)">🤖 AI Log</div>
+</div>
+
+<!-- AI STRIP -->
+<div class="ai-strip">
+  <div class="ai-strip-l">
+    <div class="ai-icon">🤖</div>
+    <div>
+      <div class="ai-title">AI อ่าน LINE → อัปเดต Dashboard อัตโนมัติ</div>
+      <div class="ai-sub">อัปโหลดไฟล์ .txt จาก LINE หรือวางข้อความ — AI จะแยกงาน ลิปะ / เฉวง และบันทึกการเงินให้</div>
+    </div>
+  </div>
+  <div class="ai-strip-r">
+    <div class="drop-zone" id="dz" onclick="document.getElementById('fi').click()" ondragover="dzOver(event)" ondragleave="dzLeave(event)" ondrop="dzDrop(event)">
+      <input type="file" id="fi" accept=".txt" onchange="onFile(event)">
+      📁 LINE .txt
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="openPaste()">📋 วางข้อความ</button>
+  </div>
+</div>
+
+<!-- AI STATUS -->
+<div class="ai-sts" id="ai-sts"></div>
+
+<!-- SUMMARY -->
+<div class="summary-row">
+  <div class="sum-card lipa-card">
+    <div class="sum-label">🏠 ลิปะ — จ่ายแล้ว</div>
+    <div class="sum-val" id="s-lipa-paid">฿0</div>
+    <div class="sum-sub"><span id="s-lipa-tasks">0</span> งาน · <span id="s-lipa-done">0</span> เสร็จ</div>
+  </div>
+  <div class="sum-card chaweng-card">
+    <div class="sum-label">🏢 เฉวง — จ่ายแล้ว</div>
+    <div class="sum-val" id="s-chaweng-paid">฿0</div>
+    <div class="sum-sub"><span id="s-chaweng-tasks">0</span> งาน · <span id="s-chaweng-done">0</span> เสร็จ</div>
+  </div>
+  <div class="sum-card total-card">
+    <div class="sum-label">💰 รวมจ่ายทั้งหมด</div>
+    <div class="sum-val" id="s-total">฿0</div>
+    <div class="sum-sub">รอจ่ายอีก <span id="s-pending" class="up">฿0</span></div>
+  </div>
+  <div class="sum-card task-card">
+    <div class="sum-label">✅ ความคืบหน้า</div>
+    <div class="sum-val" id="s-progress">0%</div>
+    <div class="sum-sub"><span id="s-done">0</span> / <span id="s-total-tasks">0</span> งานเสร็จ</div>
+  </div>
+</div>
+
+<!-- KANBAN VIEW -->
+<div class="view active" id="view-kanban">
+  <div class="kb-toolbar">
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+      <button class="fb active-all" id="fb-all" onclick="setType('all',this)">ทุกประเภท</button>
+      <button class="fb" id="fb-elec" onclick="setType('Electrical',this)">⚡ ไฟฟ้า</button>
+      <button class="fb" id="fb-plumb" onclick="setType('Plumbing',this)">🚿 ประปา</button>
+      <button class="fb" id="fb-demo" onclick="setType('Demo',this)">🔨 รื้อถอน</button>
+      <button class="fb" id="fb-struct" onclick="setType('Structure',this)">🏗️ โครงสร้าง</button>
+      <button class="fb" id="fb-finish" onclick="setType('Finishing',this)">🎨 ตกแต่ง</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <input class="srch" placeholder="ค้นหางาน…" id="sq" oninput="renderBoard()">
+      <span id="task-ct" style="font-size:10px;color:var(--muted);white-space:nowrap;"></span>
+    </div>
+  </div>
+  <div class="board-wrap">
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<!-- PAYMENTS VIEW -->
+<div class="view" id="view-payments">
+  <div class="pay-wrap">
+    <div class="pay-hdr">
+      <div class="pay-title">💰 บัญชีการเงิน</div>
+      <button class="btn btn-lipa btn-sm" onclick="openAddPay()">+ เพิ่มรายการ</button>
+    </div>
+    <div class="pay-grid">
+      <div class="pay-proj" id="pay-lipa"></div>
+      <div class="pay-proj" id="pay-chaweng"></div>
+    </div>
+  </div>
+</div>
+
+<!-- LOG VIEW -->
+<div class="view" id="view-log">
+  <div class="log-wrap">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <div style="font-family:'DM Serif Display',serif;font-size:20px;">🤖 ประวัติ AI Import</div>
+      <button class="btn btn-ghost btn-sm" onclick="clearLog()">ล้าง</button>
+    </div>
+    <div id="log-list"></div>
+  </div>
+</div>
+
+<!-- PASTE MODAL -->
+<div class="ov" id="paste-ov">
+  <div class="modal">
+    <div class="modal-title">📋 วาง LINE Chat</div>
+    <div class="fl">
+      <label>วางข้อความจาก LINE ที่นี่</label>
+      <textarea class="fta" id="paste-txt" rows="10" placeholder="วางข้อความ LINE chat…&#10;&#10;ตัวอย่าง:&#10;09:40 MR.HOME KOH SAMUI ##ลิปะน้อย ซ่อมฝ้าเสร็จเรียบร้อย&#10;15:54 MR.HOME KOH SAMUI เบิกค่าแรง 15,000 บาทครับ"></textarea>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="cm('paste-ov')">ยกเลิก</button>
+      <button class="btn btn-lipa" onclick="runAI(document.getElementById('paste-txt').value)">🤖 วิเคราะห์</button>
+    </div>
+  </div>
+</div>
+
+<!-- PREVIEW MODAL -->
+<div class="ov" id="prev-ov">
+  <div class="modal">
+    <div class="modal-title">🤖 AI พบรายการใหม่</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">เลือกรายการที่ต้องการเพิ่ม แล้วกด "บันทึก"</div>
+    <div id="prev-summary" style="background:var(--chaweng-lt);border:1px solid rgba(74,142,196,.2);border-radius:var(--r-sm);padding:10px 12px;font-size:12px;color:var(--chaweng);margin-bottom:10px;display:none;"></div>
+    <div id="prev-list" style="max-height:300px;overflow-y:auto;"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="cm('prev-ov')">ยกเลิก</button>
+      <button class="btn btn-green" onclick="applyAll()">✓ บันทึกที่เลือก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD CARD MODAL -->
+<div class="ov" id="card-ov">
+  <div class="modal">
+    <div class="modal-title" id="cm-title">เพิ่มงาน</div>
+    <div class="fl"><label>ชื่องาน *</label><input class="fi" id="cm-t" placeholder="ระบุงาน…"></div>
+    <div class="fl"><label>โน้ต / รายละเอียด</label><textarea class="fta" id="cm-n" rows="2"></textarea></div>
+    <div class="fg2">
+      <div class="fl"><label>สถานะ</label>
+        <select class="fs" id="cm-s"><option>Todo</option><option>In Progress</option><option>Review</option><option>Done</option></select>
+      </div>
+      <div class="fl"><label>โครงการ</label>
+        <select class="fs" id="cm-proj"><option value="Lipa">🏠 ลิปะน้อย</option><option value="Chaweng">🏢 เฉวง 3 ชั้น</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>ประเภทงาน</label>
+        <select class="fs" id="cm-type"><option>General</option><option>Electrical</option><option>Plumbing</option><option>Demo</option><option>Structure</option><option>Finishing</option></select>
+      </div>
+      <div class="fl"><label>ค่าใช้จ่าย (฿)</label><input class="fi" id="cm-c" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>วันที่</label><input class="fi" id="cm-d" type="date"></div>
+      <div class="fl"><label>Priority</label>
+        <select class="fs" id="cm-p"><option>Medium</option><option>High</option><option>Low</option></select>
+      </div>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-sm" style="background:var(--danger-lt);color:var(--danger);border:1px solid rgba(212,64,48,.3);margin-right:auto;display:none;" id="del-btn" onclick="delTask()">🗑 ลบ</button>
+      <button class="btn btn-ghost" onclick="cm('card-ov')">ยกเลิก</button>
+      <button class="btn btn-lipa" onclick="saveCard()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD PAYMENT MODAL -->
+<div class="ov" id="pay-ov">
+  <div class="modal">
+    <div class="modal-title">+ บันทึกการชำระเงิน</div>
+    <div class="fl"><label>รายละเอียด *</label><input class="fi" id="pm-d" placeholder="ค่าแรง / ค่าวัสดุ…"></div>
+    <div class="fg2">
+      <div class="fl"><label>โครงการ</label>
+        <select class="fs" id="pm-proj"><option value="Lipa">🏠 ลิปะน้อย</option><option value="Chaweng">🏢 เฉวง 3 ชั้น</option></select>
+      </div>
+      <div class="fl"><label>จำนวนเงิน (฿)</label><input class="fi" id="pm-a" type="number" placeholder="0"></div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>วันที่</label><input class="fi" id="pm-dt" type="date"></div>
+      <div class="fl"><label>ผู้รับเงิน</label><input class="fi" id="pm-w" placeholder="MR.HOME"></div>
+    </div>
+    <div class="fl"><label>สถานะ</label>
+      <select class="fs" id="pm-s"><option value="paid">✅ จ่ายแล้ว</option><option value="pending">⏳ รอจ่าย</option></select>
+    </div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="cm('pay-ov')">ยกเลิก</button>
+      <button class="btn btn-lipa" onclick="savePay()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><div class="td" id="tdot"></div><span id="tmsg"></span></div>
+
+<script>
+// ══════ DATA ══════
+let TASKS=[], PAYS=[], LOGS=[];
+let editId=null, dragId=null, proj='both', typeF='all';
+
+const COLS=['Todo','In Progress','Review','Done'];
+const CL={'Todo':'📋 รอทำ','In Progress':'🔧 กำลังทำ','Review':'👀 รอตรวจ','Done':'✅ เสร็จ'};
+const PC={Lipa:'var(--lipa)',Chaweng:'var(--chaweng)'};
+const TC={Electrical:'elec',Plumbing:'plumb',Demo:'demo',Structure:'struct',Finishing:'finish',General:'gen'};
+
+// ══ INITIAL DATA จาก LINE chat อ่านจริง ══
+const T0=[
+  // ══ 🏠 ลิปะน้อย ══
+  {id:1,t:'ซ่อมฝ้า + ทาสีฝ้าเพดาน',n:'✅ เสร็จ 18/05 เบิก ฿7,000+฿3,500 = ฿10,500',s:'Done',p:'Lipa',type:'Finishing',cost:10500,date:'2026-05-18',pri:'High',by:'MR'},
+  {id:2,t:'รื้อสุขภัณฑ์+อ่างล้างหน้า+วาล์ว ห้องน้ำบน+ล่าง',n:'✅ รื้อหมดทั้งสองห้อง เก็บของเข้าโรงรถบ้านแม่',s:'Done',p:'Lipa',type:'Demo',cost:0,date:'2026-05-18',pri:'High',by:'MR'},
+  {id:3,t:'รื้อเคาน์เตอร์ครัว + กระเบื้องผนังครัว',n:'✅ รื้อออกทั้งหมด เหลือแต่ฝาผนัง — 21/05 MR ยืนยัน',s:'Done',p:'Lipa',type:'Demo',cost:10500,date:'2026-05-21',pri:'High',by:'MR'},
+  {id:4,t:'รื้อกระเบื้องพื้นด้านหน้า',n:'✅ เสร็จ 18/05 เก็บประตูเศษเหล็กไว้ขาย',s:'Done',p:'Lipa',type:'Demo',cost:1500,date:'2026-05-18',pri:'Medium',by:'MR'},
+  {id:5,t:'รื้อประตูม้วน 2 บาน',n:'✅ เสร็จ 18/05 ฿6,000 เก็บบานที่ 3 ไว้ก่อน',s:'Done',p:'Lipa',type:'Demo',cost:6000,date:'2026-05-18',pri:'High',by:'MR'},
+  {id:6,t:'รับสุขภัณฑ์ใหม่ที่ลิปะ',n:'✅ ของส่งถึง 20/05 MR รับแล้ว 095-515-7089',s:'Done',p:'Lipa',type:'Plumbing',cost:0,date:'2026-05-20',pri:'High',by:'MR'},
+  {id:7,t:'วัดขนาดประตู/เคาน์เตอร์/ผนังครัว/ความสูงเพดานชั้น 2',n:'W.ch ขอให้วัด 24/05 — รอผลการวัด เพื่อสั่งประตูและกระเบื้อง',s:'In Progress',p:'Lipa',type:'Finishing',cost:0,date:'2026-05-24',pri:'High',by:'MR'},
+  {id:8,t:'เลือกกระเบื้องพื้น+ผนัง ห้องน้ำบน+ล่าง',n:'24/05 MR ถามแบบกระเบื้อง รอ W.ch ยืนยัน mood & tone และขนาด',s:'In Progress',p:'Lipa',type:'Finishing',cost:0,date:'2026-05-24',pri:'High',by:'MR'},
+  {id:9,t:'ปูกระเบื้องห้องน้ำใหม่ ชั้นบน + ชั้นล่าง',n:'รอเลือกและสั่งกระเบื้องก่อน — ต้องแจ้งขนาดให้ MR คำนวณ',s:'Todo',p:'Lipa',type:'Finishing',cost:0,date:'',pri:'High',by:'MR'},
+  {id:10,t:'ติดตั้งสุขภัณฑ์ใหม่ + วาล์วทั้งหมด',n:'รอปูกระเบื้องเสร็จก่อน ของมาถึงแล้ว',s:'Todo',p:'Lipa',type:'Plumbing',cost:0,date:'',pri:'High',by:'MR'},
+  {id:11,t:'ติดตั้งเคาน์เตอร์ครัวสำเร็จรูป + ซิงค์ + เตา',n:'สั่งผลิตแล้ว รอขนาดจากการวัด',s:'Todo',p:'Lipa',type:'Finishing',cost:0,date:'',pri:'Medium',by:'MR'},
+  {id:12,t:'ฉาบเปลือยพื้นด้านหน้า',n:'ตัดสินใจ: รื้อแล้วฉาบเปลือย ประหยัด ไม่ต้องดูแล',s:'Todo',p:'Lipa',type:'Finishing',cost:0,date:'',pri:'Medium',by:'MR'},
+  {id:13,t:'ประตูห้อง 2 บาน + ประตูห้องน้ำ 2 บาน (บานเลื่อน PVC)',n:'27/05 MR แนะนำประตูห้องน้ำเป็นบานเลื่อน ติดด้านนอก ไม่ต้องรื้อวงกบ',s:'Todo',p:'Lipa',type:'Finishing',cost:0,date:'',pri:'Medium',by:'MR'},
+  {id:14,t:'ประตูช่องเก็บของใต้บันได',n:'22/05 MR ถาม: บานซิงค์สำเร็จรูป หรือโครงเหล็กยิปซั่ม? — รอ W.ch ตัดสินใจ',s:'Review',p:'Lipa',type:'Finishing',cost:0,date:'2026-05-22',pri:'Low',by:'MR'},
+  {id:15,t:'สายชำระ + เซ็ทฝักบัว',n:'23/05 W.ch จำว่าซื้อไปแล้ว รื้อหาใบเสร็จ MR บอกช่างกระจกน่าจะติดไปบ้างแล้ว',s:'Review',p:'Lipa',type:'Plumbing',cost:0,date:'2026-05-23',pri:'Medium',by:'MR'},
+  {id:16,t:'ไฟกิ่งหัวนอน 2 ฝั่ง + สวิตช์หรี่แสง ห้องใหญ่',n:'W.ch สั่งเอง — คอนโทรล + สวิตช์หรี่ 2 ฝั่ง + อีก 2 ดวง',s:'Todo',p:'Lipa',type:'Electrical',cost:0,date:'',pri:'Low',by:'W'},
+
+  // ══ 🏢 เฉวง 3 ชั้น ══
+  {id:17,t:'รื้ออุปกรณ์แสงสว่าง+ปลั๊ก+สายไฟเก่า ชั้น 2-3',n:'✅ เสร็จ 17/05 สายไฟเก่าใต้เพดานหายไปบางส่วน',s:'Done',p:'Chaweng',type:'Electrical',cost:0,date:'2026-05-17',pri:'High',by:'MR'},
+  {id:18,t:'จัดซื้อสายไฟใหม่ที่โฮมโปร',n:'✅ รับ 20/05 สาย 2.5 & 1.5 น้ำตาล/ฟ้า/เขียวเหลือง อย่างละ 6 ม้วน',s:'Done',p:'Chaweng',type:'Electrical',cost:0,date:'2026-05-20',pri:'High',by:'MR'},
+  {id:19,t:'เช็คสายไฟ + เปลี่ยนสายที่เสียทั้งหมด',n:'✅ 22/05 MR แจ้งเช็คระบบไฟทั้งหมดและเปลี่ยนสายที่ชำรุดเรียบร้อย รอแค่เลือกปลั๊ก/สวิตช์',s:'Done',p:'Chaweng',type:'Electrical',cost:0,date:'2026-05-22',pri:'High',by:'MR'},
+  {id:20,t:'เลือกแบบปลั๊กสวิตช์ไฟ ตึก 3 ชั้น',n:'22/05 MR ถาม รอ W.ch ส่งตัวอย่าง — แจ้งว่าคืนนั้นจะส่งให้',s:'In Progress',p:'Chaweng',type:'Electrical',cost:0,date:'2026-05-22',pri:'Medium',by:'W'},
+  {id:21,t:'ติดตั้งตู้คอนซูมเมอร์ + มิเตอร์ไฟแต่ละชั้น',n:'25/05 MR แจ้งเหลือแค่ติดตั้งเมนตู้คอนซูมเมอร์และมิเตอร์',s:'Todo',p:'Chaweng',type:'Electrical',cost:0,date:'',pri:'High',by:'MR'},
+  {id:22,t:'รื้อกระเบื้องห้องน้ำชั้น 1 + ชั้น 3',n:'✅ 21/05 รื้อกระเบื้องพื้นและผนังเสร็จเรียบร้อยทั้งสองชั้น',s:'Done',p:'Chaweng',type:'Demo',cost:0,date:'2026-05-21',pri:'High',by:'MR'},
+  {id:23,t:'รื้อกระเบื้อง + เคาน์เตอร์ ห้องน้ำชั้น 2',n:'✅ 21/05 ซื้อกระเบื้องผนัง+พื้น+เคาน์เตอร์ออกเสร็จ Invoice 10',s:'Done',p:'Chaweng',type:'Demo',cost:0,date:'2026-05-21',pri:'High',by:'MR'},
+  {id:24,t:'รื้อฝ้าเพดานชั้น 1 + ชั้น 3',n:'✅ 21/05 รื้อฝ้าทั้งสองชั้นเสร็จแล้ว ชั้น 2 รอ W.ch อนุมัติ',s:'Done',p:'Chaweng',type:'Demo',cost:0,date:'2026-05-21',pri:'Medium',by:'MR'},
+  {id:25,t:'รื้อประตูม้วนบานสุดท้าย (บานที่ 3)',n:'✅ 28/05 เบิก ฿2,500 เสร็จแล้ว',s:'Done',p:'Chaweng',type:'Demo',cost:2500,date:'2026-05-28',pri:'Medium',by:'MR'},
+  {id:26,t:'กั้นห้องด้านหน้า — ตั้งเสาเหล็ก + ก่ออิฐ',n:'✅ 25/05 ก่อผนังเข้ามาเรียบร้อย ปรับแนวตามเสาเหล็ก (ย่นระยะจากเสาไฟฟ้า 24/05)',s:'Done',p:'Chaweng',type:'Structure',cost:30000,date:'2026-05-25',pri:'High',by:'MR'},
+  {id:27,t:'ก่อผนังด้านใน + ช่องประตู',n:'✅ 01/06 งานก่อผนังด้านในพร้อมช่องประตูเสร็จเรียบร้อย Invoice 15',s:'Done',p:'Chaweng',type:'Structure',cost:0,date:'2026-06-01',pri:'High',by:'MR'},
+  {id:28,t:'ฉาบผนังห้องน้ำชั้น 1',n:'✅ 28/05 เสร็จ ฿3,425 — เทปรับพื้นสโลปเสร็จ 25/05',s:'Done',p:'Chaweng',type:'Finishing',cost:3425,date:'2026-05-28',pri:'High',by:'MR'},
+  {id:29,t:'ฉาบผนังห้องน้ำชั้น 3',n:'✅ 28/05 เสร็จ ฿6,525',s:'Done',p:'Chaweng',type:'Finishing',cost:6525,date:'2026-05-28',pri:'High',by:'MR'},
+  {id:30,t:'เทปรับพื้นสโลป + ฉาบผนังข้างห้องน้ำ ชั้น 1 & 3',n:'✅ 25/05 เริ่มเท, 28/05 ฉาบเสร็จเรียบร้อย',s:'Done',p:'Chaweng',type:'Finishing',cost:0,date:'2026-05-28',pri:'High',by:'MR'},
+  {id:31,t:'ปูกระเบื้องห้องน้ำชั้น 1, 2, 3',n:'รอ W.ch เลือกกระเบื้องและส่งขนาด — 27/05 MR ถามแบบ',s:'Todo',p:'Chaweng',type:'Finishing',cost:0,date:'',pri:'High',by:'MR'},
+  {id:32,t:'ติดตั้งท่อน้ำดี+ฝักบัว ห้องน้ำ 3 ชั้น',n:'21/05 MR แจ้งต้องรอฝักบัวมาก่อนถึงจะต่อท่อได้ W.ch OK ให้รอก่อน',s:'Todo',p:'Chaweng',type:'Plumbing',cost:0,date:'',pri:'High',by:'MR'},
+  {id:33,t:'รีโนเวทห้องน้ำชั้น 2 (ปูกระเบื้อง+ประปา)',n:'รอหลังชั้น 1 และชั้น 3 เสร็จ',s:'Todo',p:'Chaweng',type:'Plumbing',cost:0,date:'',pri:'High',by:'MR'},
+  {id:34,t:'ตัดหลังคา + ติดโครงเหล็กรางน้ำฝน + แผ่นปิดขอบ',n:'01/06 MR แจ้งเป็นงานที่เหลือหลังก่อผนังใน Invoice 15',s:'Todo',p:'Chaweng',type:'Structure',cost:0,date:'',pri:'High',by:'MR'},
+  {id:35,t:'⚠️ ตรวจสอบของหาย — เหล็ก/แม่เหล็ก/สายไฟ',n:'20/05 เหล็กโครงหลังคาถูกตัด · แม่เหล็กประตูม้วนหาย · สายไฟเก่าใต้เพดานหาย แจ้ง MR แล้ว',s:'Review',p:'Chaweng',type:'General',cost:0,date:'2026-05-20',pri:'High',by:'MR'},
+  {id:36,t:'รื้อฝ้าเพดานชั้น 2',n:'25/05 W.ch บอกเดี๋ยวก่อน รอตัดสินใจ',s:'Review',p:'Chaweng',type:'Demo',cost:0,date:'2026-05-25',pri:'Low',by:'W'},
+];
+
+// ══ Payment แยก project ชัดเจน อัปเดตถึง 10/06/69 ══
+const P0=[
+  // ── จ่ายแล้ว ──
+  {id:1,date:'18/05/69',desc:'ค่าวัสดุกั้นห้องด้านหน้า (บิล Joy ร้านช่อมพัทน้อย) อิฐ ปูน สี สายไฟ CT',proj:'Chaweng',who:'Joy / ร้านช่อมพัทน้อย',amount:30829,status:'paid'},
+  {id:2,date:'18/05/69',desc:'ค่าแรงซ่อมฝ้า + ทาสีฝ้าเพดาน',proj:'Lipa',who:'MR.HOME KOH SAMUI',amount:10500,status:'paid'},
+  {id:3,date:'18/05/69',desc:'ค่าแรงรื้อประตูม้วน 2 บาน + รื้อกระเบื้องพื้นด้านหน้า',proj:'Lipa',who:'MR.HOME KOH SAMUI',amount:7500,status:'paid'},
+  {id:4,date:'20/05/69',desc:'เบิก 50% ค่าแรงงานกั้นห้อง+ก่อสร้างด้านหน้า (ยอดเต็ม ฿30,000)',proj:'Chaweng',who:'MR THANAPAT NGAMSONG',amount:15000,status:'paid'},
+  {id:5,date:'21/05/69',desc:'ค่าแรงรื้อกระเบื้องห้องน้ำชั้น 1+3 + รื้อเคาน์เตอร์ครัว (Invoice 10-12) ฿6,000 เฉวง',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:6000,status:'paid'},
+  {id:6,date:'21/05/69',desc:'ค่าแรงงานระบบไฟ เบิกล่วงหน้า ฿15,000 (Invoice 11)',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:15000,status:'paid'},
+  {id:7,date:'21/05/69',desc:'ค่าแรงรื้อกระเบื้องครัว + ห้องน้ำ ลิปะน้อย (Invoice 12)',proj:'Lipa',who:'MR.HOME KOH SAMUI',amount:10500,status:'paid'},
+  {id:8,date:'28/05/69',desc:'รื้อประตูม้วนบานที่ 3 + ฉาบผนังห้องน้ำชั้น 1 (฿3,425) + ชั้น 3 (฿6,525) รวม ฿12,450',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:12450,status:'paid'},
+
+  // ── HomePro #6895107 — 26/05/69 — จัดส่งกรุงเทพฯ ──
+  {id:9,date:'26/05/69',desc:'HomePro #6895107 — ชุดดอกสว่านเจาะเหล็ก MATALL 19 ชิ้น (฿490) + ชุดสว่านไร้สาย ROWEL 16V (฿4,590) + ส่ง ฿200 - ส่วนลด ฿150 = รวม ฿5,130',proj:'Chaweng',who:'HomePro Online (จัดส่งกรุงเทพฯ)',amount:5130,status:'paid'},
+
+  // ── HomePro #6925130 — 06/06/69 — รับสาขาสมุย เฉวง ──
+  {id:10,date:'06/06/69',desc:'HomePro #6925130 — กระจกยาว MOYA 40x155 ซม. (฿1,490) + หลอด LED MR16 GU10 6 ดวง (฿594) + สายล้างท่อ (฿139) + ทีวี TCL 65" 4K Google TV (฿14,490) = รวม ฿16,713',proj:'Chaweng',who:'HomePro สมุย เฉวง (Click&Collect)',amount:16713,status:'paid'},
+
+  // ── Global House #GHSMION01AON-690610-0003 — 10/06/69 ──
+  {id:11,date:'10/06/69',desc:'Global House สาขาสมุย — EILON ดาวน์ไลท์ฝังฝ้า LED 4นิ้ว 7W ELTD-TJ04-07DW สีขาว 10 ดวง (฿1,450 - ส่วนลด ฿200) = ฿1,250 | ใบกำกับภาษี GHSMION01AON-690610-0003',proj:'Chaweng',who:'Global House สาขาสมุย (00076)',amount:1250,status:'paid'},
+
+  // ── HomePro #6938330 — 10/06/69 — รับสาขาสมุย เฉวง ──
+  {id:12,date:'10/06/69',desc:'HomePro #6938330 — ดาวน์ไลท์ CARINI B0550-WH 5นิ้ว (฿129) + CARINI CS16-4 5นิ้ว สีดำ (฿129) + เต้ารับ CAT6 ×2 (฿232) + หน้ากาก 2ช่อง ×5 (฿425) + เต้ารับเดี่ยว ×3 (฿351) + เต้ารับคู่ VERVE ×3 (฿1,161) + สวิตช์ 2ช่อง ×3 (฿1,035) + กล่องลอย 4x4 ×3 (฿162) + สวิตช์ 1ช่อง ×4 (฿1,424) + หลอด LED A60 แพ็ก4 (฿119) = รวม ฿5,167 → ยอดสุทธิ ฿1,837',proj:'Chaweng',who:'HomePro สมุย เฉวง (Click&Collect)',amount:1837,status:'paid'},
+
+  // ── รอจ่าย ──
+  {id:13,date:'01/06/69',desc:'งานก่อผนังด้านใน+ช่องประตู ตึก 3 ชั้น (Invoice 15) — รอยอด',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+  {id:14,date:'TBD',desc:'ตัดหลังคา + ติดโครงเหล็กรางน้ำฝน + แผ่นปิดขอบหลังคา',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+  {id:11,date:'TBD',desc:'ปูกระเบื้องห้องน้ำ 3 ชั้น + ติดตั้งสุขภัณฑ์ (ตาม Quotation)',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+  {id:12,date:'TBD',desc:'ติดตั้งตู้คอนซูมเมอร์ + มิเตอร์ไฟ 3 ชั้น',proj:'Chaweng',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+  {id:13,date:'TBD',desc:'ปูกระเบื้องห้องน้ำบน+ล่าง + ติดตั้งสุขภัณฑ์',proj:'Lipa',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+  {id:14,date:'TBD',desc:'ติดตั้งเคาน์เตอร์ครัวสำเร็จรูป + ซิงค์ + เตา',proj:'Lipa',who:'MR.HOME KOH SAMUI',amount:0,status:'pending'},
+];
+
+// ══ AI ══
+async function runAI(txt){
+  if(!txt||txt.trim().length<20){toast('กรุณาวางข้อความ LINE',true);return;}
+  cm('paste-ov');
+  setAiSts('proc','<span class="spin">⟳</span> AI กำลังอ่าน LINE chat และแยก ลิปะ / เฉวง…');
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1000,
+        messages:[{role:'user',content:`คุณคือผู้ช่วยบันทึกงานรีโนเวท อ่าน LINE chat แล้วแยก:
+
+1. งานใหม่ (tasks) — แยกชัดเจนว่าเป็นของ "Lipa" (ลิปะน้อย) หรือ "Chaweng" (เฉวง 3 ชั้น)
+2. การชำระเงิน (payments) — ระบุ project ว่า Lipa หรือ Chaweng
+
+LINE chat:
+---
+${txt.substring(0,6000)}
+---
+
+ตอบ JSON เท่านั้น ไม่มี markdown:
+{"tasks":[{"title":"ชื่องาน","note":"รายละเอียด","status":"Todo|In Progress|Review|Done","project":"Lipa|Chaweng","type":"General|Electrical|Plumbing|Demo|Structure|Finishing","cost":0,"date":"YYYY-MM-DD","priority":"High|Medium|Low"}],"payments":[{"date":"วันที่","desc":"รายละเอียด","project":"Lipa|Chaweng","who":"ผู้รับ","amount":0,"status":"paid|pending"}],"summary":"สรุปภาษาไทย 1-2 ประโยค"}`}]
+      })
+    });
+    const d=await r.json();
+    const raw=d.content?.find(b=>b.type==='text')?.text||'';
+    const parsed=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    clearAiSts();
+    showPreview(parsed);
+  }catch(e){
+    clearAiSts();
+    setAiSts('err','❌ '+e.message);
+    setTimeout(clearAiSts,5000);
+  }
+}
+
+let pendingItems=[];
+function showPreview(parsed){
+  pendingItems=[];
+  let html='';
+  if(parsed.summary){
+    document.getElementById('prev-summary').textContent=parsed.summary;
+    document.getElementById('prev-summary').style.display='block';
+  }
+  (parsed.tasks||[]).forEach((t,i)=>{
+    const idx=pendingItems.length;
+    pendingItems.push({type:'task',data:t,on:true});
+    const pc=t.project==='Lipa'?'var(--lipa)':'var(--chaweng)';
+    html+=`<div class="prev-item">
+      <div class="prev-ico">${t.status==='Done'?'✅':'🔧'}</div>
+      <div class="prev-txt">
+        <strong>${t.title}</strong><br>
+        <span style="color:var(--muted)">${t.note||''}</span><br>
+        <span style="color:${pc};font-size:10px;font-weight:700">${t.project==='Lipa'?'🏠 ลิปะ':'🏢 เฉวง'}</span>
+        <span style="color:var(--muted);font-size:10px;margin-left:6px">${t.status}</span>
+        ${t.cost>0?`<span style="color:var(--lipa);font-size:10px;font-weight:700;margin-left:6px">฿${t.cost.toLocaleString()}</span>`:''}
+      </div>
+      <div class="prev-chk on" id="pk${idx}" onclick="tog(${idx},this)">✓</div>
+    </div>`;
+  });
+  (parsed.payments||[]).forEach((p,i)=>{
+    if(!p.amount||p.amount<=0)return;
+    const idx=pendingItems.length;
+    pendingItems.push({type:'pay',data:p,on:true});
+    const pc=p.project==='Lipa'?'var(--lipa)':'var(--chaweng)';
+    html+=`<div class="prev-item">
+      <div class="prev-ico">💰</div>
+      <div class="prev-txt">
+        <strong>${p.desc}</strong><br>
+        <span style="color:var(--muted)">${p.who||''} · ${p.date||''}</span><br>
+        <span style="color:${pc};font-size:10px;font-weight:700">${p.project==='Lipa'?'🏠 ลิปะ':'🏢 เฉวง'}</span>
+        <span style="color:var(--danger);font-family:'DM Mono',monospace;font-size:11px;font-weight:700;margin-left:6px">฿${p.amount.toLocaleString()}</span>
+        <span class="${p.status==='paid'?'paid-b':'pend-b'} p-badge" style="margin-left:6px">${p.status==='paid'?'จ่ายแล้ว':'รอจ่าย'}</span>
+      </div>
+      <div class="prev-chk on" id="pk${idx}" onclick="tog(${idx},this)">✓</div>
+    </div>`;
+  });
+  if(!html)html='<div style="text-align:center;padding:20px;color:var(--muted);font-size:12px">ไม่พบรายการใหม่</div>';
+  document.getElementById('prev-list').innerHTML=html;
+  document.getElementById('prev-ov').classList.add('open');
+}
+
+function tog(i,el){pendingItems[i].on=!pendingItems[i].on;el.classList.toggle('on',pendingItems[i].on);el.textContent=pendingItems[i].on?'✓':'';}
+
+function applyAll(){
+  let nt=0,np=0,changes=[];
+  pendingItems.forEach(item=>{
+    if(!item.on)return;
+    if(item.type==='task'){
+      TASKS.push({id:Date.now()+Math.random(),t:item.data.title,n:item.data.note||'',s:item.data.status||'Todo',p:item.data.project||'Lipa',type:item.data.type||'General',cost:parseFloat(item.data.cost)||0,date:item.data.date||'',pri:item.data.priority||'Medium',by:'MR'});
+      nt++;changes.push({i:'🔧',t:`งาน: "${item.data.title}" [${item.data.project}]`});
+    }else{
+      PAYS.push({id:Date.now()+Math.random(),date:item.data.date||'',desc:item.data.desc,proj:item.data.project||'Lipa',who:item.data.who||'MR.HOME',amount:parseFloat(item.data.amount)||0,status:item.data.status||'paid'});
+      np++;changes.push({i:'💰',t:`เงิน: ${item.data.desc} ฿${item.data.amount?.toLocaleString()} [${item.data.project}]`});
+    }
+  });
+  LOGS.unshift({time:new Date().toLocaleString('th-TH'),src:'LINE Import',sum:`เพิ่ม ${nt} งาน, ${np} รายการเงิน`,changes});
+  save();cm('prev-ov');renderAll();renderLog();
+  setAiSts('ok',`✅ เพิ่มสำเร็จ: ${nt} งาน · ${np} รายการเงิน — แยก ลิปะ/เฉวง เรียบร้อย`);
+  setTimeout(clearAiSts,4000);
+  toast(`✓ เพิ่ม ${nt} งาน + ${np} payment`,false);
+}
+
+// ══ FILE ══
+function dzOver(e){e.preventDefault();document.getElementById('dz').classList.add('dov');}
+function dzLeave(e){document.getElementById('dz').classList.remove('dov');}
+function dzDrop(e){e.preventDefault();document.getElementById('dz').classList.remove('dov');const f=e.dataTransfer.files[0];if(f)readF(f);}
+function onFile(e){const f=e.target.files[0];if(f)readF(f);}
+function readF(f){const r=new FileReader();r.onload=e=>runAI(e.target.result);r.readAsText(f,'UTF-8');}
+
+// ══ RENDER ══
+function renderAll(){renderBoard();renderPays();renderSummary();updateBadges();}
+
+function renderBoard(){
+  const q=(document.getElementById('sq')?.value||'').toLowerCase();
+  const filtered=TASKS.filter(t=>{
+    if(proj==='lipa'&&t.p!=='Lipa')return false;
+    if(proj==='chaweng'&&t.p!=='Chaweng')return false;
+    if(typeF!=='all'&&t.type!==typeF)return false;
+    if(q&&!t.t.toLowerCase().includes(q)&&!(t.n||'').toLowerCase().includes(q))return false;
+    return true;
+  });
+  document.getElementById('task-ct').textContent=filtered.length+' งาน';
+  document.getElementById('board').innerHTML=COLS.map(col=>{
+    const cards=filtered.filter(t=>t.s===col);
+    const sum=cards.reduce((s,t)=>s+(t.cost||0),0);
+    return`<div class="col" data-col="${col}"
+      ondragover="dov(event,this)" ondragleave="dlv(event,this)" ondrop="ddr(event,'${col}')">
+      <div class="col-hdr">
+        <div class="col-l"><div class="col-dot"></div><div class="col-name">${CL[col]}</div><div class="col-ct">${cards.length}</div></div>
+        ${sum>0?`<div class="col-sum">฿${sum.toLocaleString()}</div>`:''}
+      </div>
+      <div class="cards" id="ca-${col.replace(' ','-')}">
+        ${cards.length===0?`<div class="col-empty">${col==='Done'?'🎉 เสร็จหมด!':'ยังไม่มีงาน'}</div>`:''}
+        ${cards.map(t=>cardH(t)).join('')}
+      </div>
+      <button class="add-btn" onclick="openAddCard('${col}')">+ เพิ่มงาน</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.card').forEach(c=>{
+    c.addEventListener('dragstart',e=>{dragId=c.dataset.id;c.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+    c.addEventListener('dragend',()=>{c.classList.remove('dragging');document.querySelectorAll('.cards').forEach(a=>a.classList.remove('dov'));});
+  });
+}
+
+function cardH(t){
+  const pc=PC[t.p]||'var(--muted)';
+  const tc=TC[t.type]||'gen';
+  return`<div class="card" data-id="${t.id}${t.id}" draggable="true">
+    <div class="c-pri pri-${t.pri||'Medium'}"></div>
+    <div class="c-proj proj-${t.p}"></div>
+    <div class="c-head">
+      <div class="c-title" contenteditable="false" onclick="ie(this)" onblur="stT(this,'${t.id}')" onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${esc(t.t)}</div>
+      <div class="c-acts">
+        <button class="ca" onclick="openEditCard('${t.id}')">✏️</button>
+        <button class="ca" onclick="qm('${t.id}',-1)">◀</button>
+        <button class="ca" onclick="qm('${t.id}',1)">▶</button>
+      </div>
+    </div>
+    <div class="c-note" contenteditable="false" onclick="ie(this)" onblur="stN(this,'${t.id}')" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${esc(t.n||'')}</div>
+    <div class="c-foot">
+      <div class="c-tags">
+        <span class="tag tag-${t.p==='Lipa'?'lipa':'chaweng'}">${t.p==='Lipa'?'🏠 ลิปะ':'🏢 เฉวง'}</span>
+        <span class="tag tag-${tc}">${t.type}</span>
+        ${(t.cost||0)>0?`<span class="c-cost">฿${t.cost.toLocaleString()}</span>`:''}
+      </div>
+      <div class="c-r">
+        ${t.date?`<span class="c-date">${t.date.replace('2026-','')}</span>`:''}
+        <div class="c-av" style="background:${pc}">${t.by||'?'}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderPays(){
+  const lp=PAYS.filter(p=>p.proj==='Lipa');
+  const cp=PAYS.filter(p=>p.proj==='Chaweng');
+  const renderProj=(pays,proj,color)=>{
+    const paid=pays.filter(p=>p.status==='paid').reduce((s,p)=>s+(p.amount||0),0);
+    return`<div class="pay-proj-hdr">
+      <div class="pay-proj-name" style="color:${color}">${proj==='Lipa'?'🏠 ลิปะน้อย':'🏢 เฉวง 3 ชั้น'}</div>
+      <div class="pay-proj-total" style="color:${color}">฿${paid.toLocaleString()}</div>
+    </div>
+    <div class="pay-row hdr-row"><div>วันที่</div><div>รายการ</div><div style="text-align:right">฿</div><div>สถานะ</div></div>
+    ${pays.map(p=>`<div class="pay-row">
+      <div class="p-date">${p.date||'—'}</div>
+      <div class="p-desc">${p.desc}</div>
+      <div class="p-amt ${(p.amount||0)>0?'red':'muted'}">${(p.amount||0)>0?'฿'+p.amount.toLocaleString():'—'}</div>
+      <div><span class="p-badge ${p.status==='paid'?'paid-b':'pend-b'}">${p.status==='paid'?'✓':'⏳'}</span></div>
+    </div>`).join('')}`;
+  };
+  document.getElementById('pay-lipa').innerHTML=renderProj(lp,'Lipa','var(--lipa)');
+  document.getElementById('pay-chaweng').innerHTML=renderProj(cp,'Chaweng','var(--chaweng)');
+}
+
+function renderSummary(){
+  const lTasks=TASKS.filter(t=>t.p==='Lipa');
+  const cTasks=TASKS.filter(t=>t.p==='Chaweng');
+  const lPaid=PAYS.filter(p=>p.proj==='Lipa'&&p.status==='paid').reduce((s,p)=>s+(p.amount||0),0);
+  const cPaid=PAYS.filter(p=>p.proj==='Chaweng'&&p.status==='paid').reduce((s,p)=>s+(p.amount||0),0);
+  const pending=PAYS.filter(p=>p.status==='pending').reduce((s,p)=>s+(p.amount||0),0);
+  const done=TASKS.filter(t=>t.s==='Done').length;
+  const pct=TASKS.length?Math.round(done/TASKS.length*100):0;
+  document.getElementById('s-lipa-paid').textContent='฿'+lPaid.toLocaleString();
+  document.getElementById('s-lipa-tasks').textContent=lTasks.length;
+  document.getElementById('s-lipa-done').textContent=lTasks.filter(t=>t.s==='Done').length;
+  document.getElementById('s-chaweng-paid').textContent='฿'+cPaid.toLocaleString();
+  document.getElementById('s-chaweng-tasks').textContent=cTasks.length;
+  document.getElementById('s-chaweng-done').textContent=cTasks.filter(t=>t.s==='Done').length;
+  document.getElementById('s-total').textContent='฿'+(lPaid+cPaid).toLocaleString();
+  document.getElementById('s-pending').textContent='฿'+pending.toLocaleString();
+  document.getElementById('s-progress').textContent=pct+'%';
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-total-tasks').textContent=TASKS.length;
+}
+
+function updateBadges(){
+  const l=TASKS.filter(t=>t.p==='Lipa').length;
+  const c=TASKS.filter(t=>t.p==='Chaweng').length;
+  document.getElementById('badge-both').textContent=TASKS.length;
+  document.getElementById('badge-lipa').textContent=l;
+  document.getElementById('badge-chaweng').textContent=c;
+}
+
+function renderLog(){
+  const el=document.getElementById('log-list');
+  if(!LOGS.length){el.innerHTML='<div class="log-empty">🤖 ยังไม่มีประวัติ<br><small>อัปโหลดไฟล์ LINE เพื่อเริ่มต้น</small></div>';return;}
+  el.innerHTML=LOGS.map(l=>`<div class="log-entry">
+    <div class="log-meta"><div class="log-time">${l.time}</div><div class="log-src">${l.src}</div></div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:7px">${l.sum}</div>
+    <div class="log-changes">${(l.changes||[]).map(c=>`<div class="log-ch"><span>${c.i}</span><span>${c.t}</span></div>`).join('')}</div>
+  </div>`).join('');
+}
+
+// ══ DRAG ══
+function dov(e,col){e.preventDefault();col.querySelector('.cards')?.classList.add('dov');}
+function dlv(e,col){col.querySelector('.cards')?.classList.remove('dov');}
+function ddr(e,newS){
+  e.preventDefault();document.querySelectorAll('.cards').forEach(a=>a.classList.remove('dov'));
+  if(!dragId)return;
+  const t=TASKS.find(x=>String(x.id)===String(dragId));if(!t||t.s===newS)return;
+  t.s=newS;save();renderBoard();renderSummary();updateBadges();
+  toast(`✓ "${t.t.substring(0,18)}" → ${CL[newS]}`,false);dragId=null;
+}
+
+// ══ QUICK MOVE ══
+function qm(id,dir){
+  const t=TASKS.find(x=>String(x.id)===String(id));if(!t)return;
+  const i=COLS.indexOf(t.s);const ni=i+dir;
+  if(ni<0||ni>=COLS.length)return;
+  t.s=COLS[ni];save();renderBoard();renderSummary();updateBadges();
+  toast(`✓ ย้ายไป ${CL[t.s]}`,false);
+}
+
+// ══ INLINE EDIT ══
+function ie(el){el.contentEditable='true';el.focus();const r=document.createRange();r.selectNodeContents(el);r.collapse(false);window.getSelection().removeAllRanges();window.getSelection().addRange(r);}
+function stT(el,id){el.contentEditable='false';const t=TASKS.find(x=>String(x.id)===String(id));if(!t)return;const v=el.textContent.trim()||'ไม่มีชื่อ';if(t.t===v)return;t.t=v;save();toast('✓ บันทึก',false);}
+function stN(el,id){el.contentEditable='false';const t=TASKS.find(x=>String(x.id)===String(id));if(!t)return;const v=el.textContent.trim();if(t.n===v)return;t.n=v;save();toast('✓ บันทึก',false);}
+
+// ══ CARD MODAL ══
+function openAddCard(ds){
+  editId=null;
+  document.getElementById('cm-title').textContent='เพิ่มงานใหม่';
+  document.getElementById('del-btn').style.display='none';
+  ['cm-t','cm-n','cm-c','cm-d'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('cm-s').value=ds||'Todo';
+  document.getElementById('cm-proj').value=proj==='chaweng'?'Chaweng':'Lipa';
+  document.getElementById('cm-type').value='General';
+  document.getElementById('cm-p').value='Medium';
+  document.getElementById('card-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('cm-t').focus(),80);
+}
+function openEditCard(id){
+  const t=TASKS.find(x=>String(x.id)===String(id));if(!t)return;
+  editId=id;
+  document.getElementById('cm-title').textContent='แก้ไขงาน';
+  document.getElementById('del-btn').style.display='flex';
+  document.getElementById('cm-t').value=t.t;
+  document.getElementById('cm-n').value=t.n||'';
+  document.getElementById('cm-s').value=t.s;
+  document.getElementById('cm-proj').value=t.p;
+  document.getElementById('cm-type').value=t.type;
+  document.getElementById('cm-c').value=t.cost||'';
+  document.getElementById('cm-d').value=t.date||'';
+  document.getElementById('cm-p').value=t.pri||'Medium';
+  document.getElementById('card-ov').classList.add('open');
+}
+function saveCard(){
+  const title=document.getElementById('cm-t').value.trim();if(!title)return;
+  const d={t:title,n:document.getElementById('cm-n').value.trim(),s:document.getElementById('cm-s').value,p:document.getElementById('cm-proj').value,type:document.getElementById('cm-type').value,cost:parseFloat(document.getElementById('cm-c').value)||0,date:document.getElementById('cm-d').value,pri:document.getElementById('cm-p').value,by:'MR'};
+  if(editId){const i=TASKS.findIndex(x=>String(x.id)===String(editId));TASKS[i]={...TASKS[i],...d};}
+  else TASKS.push({...d,id:Date.now()});
+  save();cm('card-ov');renderAll();toast(editId?'✓ แก้ไขแล้ว':'✓ เพิ่มงานแล้ว',false);
+}
+function delTask(){
+  if(!editId)return;
+  const t=TASKS.find(x=>String(x.id)===String(editId));
+  if(!confirm(`ลบ "${t?.t}"?`))return;
+  TASKS=TASKS.filter(x=>String(x.id)!==String(editId));
+  save();cm('card-ov');renderAll();toast('ลบแล้ว',false);
+}
+
+// ══ PAYMENT MODAL ══
+function openAddPay(){
+  ['pm-d','pm-a','pm-w'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pm-dt').value=new Date().toISOString().split('T')[0];
+  document.getElementById('pm-proj').value=proj==='chaweng'?'Chaweng':'Lipa';
+  document.getElementById('pm-s').value='paid';
+  document.getElementById('pay-ov').classList.add('open');
+}
+function savePay(){
+  const desc=document.getElementById('pm-d').value.trim();if(!desc)return;
+  PAYS.push({id:Date.now(),date:document.getElementById('pm-dt').value,desc,proj:document.getElementById('pm-proj').value,who:document.getElementById('pm-w').value||'MR.HOME',amount:parseFloat(document.getElementById('pm-a').value)||0,status:document.getElementById('pm-s').value});
+  save();cm('pay-ov');renderAll();toast('✓ บันทึกการเงินแล้ว',false);
+}
+
+// ══ NAVIGATION ══
+function showView(name,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(el)el.classList.add('active');
+  if(name==='payments')renderPays();
+  if(name==='log')renderLog();
+}
+function setProj(p,el){
+  proj=p;
+  document.querySelectorAll('.proj-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderBoard();
+}
+function setType(t,el){
+  typeF=t;
+  document.querySelectorAll('.fb').forEach(b=>{b.classList.remove('active-all','active-lipa','active-chaweng');});
+  el.classList.add('active-all');
+  renderBoard();
+}
+
+// ══ HELPERS ══
+function setAiSts(type,msg){const el=document.getElementById('ai-sts');el.className='ai-sts show '+type;el.innerHTML=msg;}
+function clearAiSts(){document.getElementById('ai-sts').className='ai-sts';}
+function openPaste(){document.getElementById('paste-txt').value='';document.getElementById('paste-ov').classList.add('open');}
+function cm(id){document.getElementById(id).classList.remove('open');}
+function clearLog(){LOGS=[];save();renderLog();toast('ล้าง log แล้ว',false);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function save(){try{localStorage.setItem('dj_tasks',JSON.stringify(TASKS));localStorage.setItem('dj_pays',JSON.stringify(PAYS));localStorage.setItem('dj_logs',JSON.stringify(LOGS));}catch(e){}}
+function load(){try{const t=localStorage.getItem('dj_tasks');const p=localStorage.getItem('dj_pays');const l=localStorage.getItem('dj_logs');if(t)TASKS=JSON.parse(t);if(p)PAYS=JSON.parse(p);if(l)LOGS=JSON.parse(l);}catch(e){}}
+
+let _tt=null;
+function toast(msg,err){const el=document.getElementById('toast'),d=document.getElementById('tdot'),m=document.getElementById('tmsg');clearTimeout(_tt);d.className='td'+(err?' err':'');m.textContent=msg;el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3000);}
+
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+// ══ INIT ══
+load();
+if(!TASKS.length)TASKS=[...T0];
+if(!PAYS.length)PAYS=[...P0];
+renderAll();
+</script>
+</body>
+</html>

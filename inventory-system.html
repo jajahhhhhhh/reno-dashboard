@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Stock — Lipa & Chaweng</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0B09; --bg2:#131210; --surface:#1A1814; --surface2:#222018;
+  --surface3:#2A2720; --border:#383228; --border2:#443C30;
+  --text:#EDE8DC; --muted:#7A7060; --muted2:#4A4438;
+  --lipa:#E8903A; --lipa-lt:#2A1808; --lipa-dim:#C07828;
+  --chaweng:#4A8EC4; --chaweng-lt:#081828; --chaweng-dim:#3A7AAE;
+  --green:#52C47A; --green-lt:#081A10; --green-dim:#3A9A5A;
+  --red:#D44030; --red-lt:#200808;
+  --warn:#D4A020; --warn-lt:#201808;
+  --purple:#9A60D4; --purple-lt:#180A28;
+  --shadow:0 2px 16px rgba(0,0,0,.5);
+  --shadow-lg:0 8px 48px rgba(0,0,0,.7);
+  --r:10px; --r-sm:6px; --r-xs:4px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overscroll-behavior:none;}
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-thumb{background:var(--border2);}
+
+/* ── HEADER ── */
+.hdr{
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  height:50px;padding:0 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:200;
+}
+.hdr-logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--text);}
+.hdr-logo em{color:var(--lipa);font-style:normal;}
+.hdr-logo small{font-size:10px;color:var(--muted);font-weight:400;border-left:1px solid var(--border2);padding-left:8px;}
+.hdr-r{display:flex;gap:6px;align-items:center;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;transition:all .15s;}
+.btn-primary{background:var(--lipa);color:#0C0B09;}
+.btn-primary:hover{background:var(--lipa-dim);}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted);}
+.btn-ghost:hover{background:var(--surface2);color:var(--text);}
+.btn-green{background:var(--green);color:#0C0B09;}
+.btn-green:hover{background:var(--green-dim);}
+.btn-red{background:var(--red);color:#fff;}
+.btn-sm{padding:5px 10px;font-size:11px;}
+
+/* ── NAV ── */
+.nav{background:var(--surface);border-bottom:1px solid var(--border);display:flex;padding:0 16px;gap:2px;}
+.ni{padding:10px 12px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.ni:hover{color:var(--text);}
+.ni.active{color:var(--lipa);border-bottom-color:var(--lipa);}
+.ni .ct{background:var(--lipa-lt);color:var(--lipa);font-size:9px;font-weight:700;padding:1px 4px;border-radius:4px;}
+
+/* ── SUMMARY STRIP ── */
+.strip{padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;gap:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.strip::-webkit-scrollbar{display:none;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 14px;flex-shrink:0;min-width:100px;}
+.sc-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px;}
+.sc-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--text);}
+.sc-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.sc.green{border-left:2px solid var(--green);}
+.sc.orange{border-left:2px solid var(--lipa);}
+.sc.red{border-left:2px solid var(--red);}
+.sc.blue{border-left:2px solid var(--chaweng);}
+
+/* ── VIEWS ── */
+.view{display:none;padding:14px 16px;min-height:calc(100vh - 160px);}
+.view.active{display:block;animation:fi .2s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ── SEARCH/FILTER BAR ── */
+.bar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.search{flex:1;min-width:150px;padding:8px 10px 8px 30px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:12px;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .15s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%237A7060' stroke-width='2.5'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:9px center;}
+.search:focus{border-color:var(--lipa);}
+.fsel{padding:7px 10px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--bg);color:var(--text);font-size:11px;font-family:'Sarabun',sans-serif;outline:none;cursor:pointer;}
+.fsel:focus{border-color:var(--lipa);}
+
+/* ── ITEM GRID ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;}
+
+/* ── ITEM CARD ── */
+.item-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;
+}
+.item-card:hover{border-color:var(--border2);box-shadow:var(--shadow);}
+.item-card.low-stock{border-left:3px solid var(--warn);}
+.item-card.out-stock{border-left:3px solid var(--red);}
+.item-card.ok-stock{border-left:3px solid var(--green);}
+
+.ic-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.ic-name{font-size:13px;font-weight:600;line-height:1.35;flex:1;}
+.ic-sku{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:2px;}
+.ic-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px;flex-shrink:0;margin-left:8px;text-transform:uppercase;}
+.badge-lipa{background:var(--lipa-lt);color:var(--lipa);border:1px solid rgba(232,144,58,.2);}
+.badge-chaweng{background:var(--chaweng-lt);color:var(--chaweng);border:1px solid rgba(74,142,196,.2);}
+.badge-both{background:var(--purple-lt);color:var(--purple);border:1px solid rgba(154,96,212,.2);}
+
+.ic-mid{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.ic-icon{width:40px;height:40px;border-radius:var(--r-sm);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.ic-cat{font-size:10px;color:var(--muted);margin-top:2px;}
+.ic-loc{font-size:10px;color:var(--muted2);margin-top:1px;}
+
+.ic-stock{flex:1;}
+.stock-bar-track{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;margin:6px 0 4px;}
+.stock-bar-fill{height:100%;border-radius:3px;transition:width .6s ease;}
+.stock-nums{display:flex;justify-content:space-between;align-items:baseline;}
+.stock-qty{font-family:'DM Mono',monospace;font-size:18px;font-weight:500;}
+.stock-qty.ok{color:var(--green);}
+.stock-qty.low{color:var(--warn);}
+.stock-qty.out{color:var(--red);}
+.stock-min{font-size:10px;color:var(--muted);}
+.stock-unit{font-size:10px;color:var(--muted);margin-left:3px;}
+
+.ic-foot{display:flex;align-items:center;justify-content:space-between;}
+.ic-price{font-family:'DM Mono',monospace;font-size:11px;color:var(--lipa);}
+.ic-actions{display:flex;gap:5px;opacity:0;transition:opacity .15s;}
+.item-card:hover .ic-actions{opacity:1;}
+.ia{width:26px;height:26px;border-radius:var(--r-xs);border:none;background:var(--surface2);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .12s;}
+.ia:hover{background:var(--surface3);color:var(--text);}
+.ia.in:hover{background:var(--green-lt);color:var(--green);}
+.ia.out:hover{background:var(--red-lt);color:var(--red);}
+
+/* ── QR SCANNER ── */
+.scanner-wrap{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+  padding:20px;text-align:center;margin-bottom:16px;
+}
+.scanner-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+.scanner-sub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+#qr-video{width:100%;max-width:320px;border-radius:var(--r-sm);border:2px solid var(--border2);background:#000;aspect-ratio:1;}
+.scanner-frame{position:relative;display:inline-block;}
+.scanner-overlay{position:absolute;inset:0;border-radius:var(--r-sm);pointer-events:none;}
+.scanner-overlay::before{
+  content:'';position:absolute;top:20%;left:20%;right:20%;bottom:20%;
+  border:2px solid var(--lipa);border-radius:4px;
+  box-shadow:0 0 0 1000px rgba(0,0,0,.5);
+  animation:scan-line 2s linear infinite;
+}
+@keyframes scan-line{0%,100%{box-shadow:0 0 0 1000px rgba(0,0,0,.5),0 0 0 0 rgba(232,144,58,.4)}50%{box-shadow:0 0 0 1000px rgba(0,0,0,.5),0 0 20px 0 rgba(232,144,58,.6)}}
+.scan-result{
+  background:var(--green-lt);border:1px solid rgba(82,196,122,.3);border-radius:var(--r-sm);
+  padding:12px 16px;margin-top:12px;display:none;
+  font-size:12px;color:var(--green);
+}
+.scan-result.show{display:block;}
+
+/* ── TRANSACTIONS ── */
+.tx-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 0;border-bottom:1px solid var(--surface2);
+}
+.tx-row:last-child{border:none;}
+.tx-icon{width:32px;height:32px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.tx-in .tx-icon{background:var(--green-lt);}
+.tx-out .tx-icon{background:var(--red-lt);}
+.tx-adj .tx-icon{background:var(--warn-lt);}
+.tx-info{flex:1;}
+.tx-name{font-size:12px;font-weight:600;}
+.tx-meta{font-size:10px;color:var(--muted);margin-top:1px;}
+.tx-qty{font-family:'DM Mono',monospace;font-size:13px;font-weight:700;white-space:nowrap;}
+.tx-in .tx-qty{color:var(--green);}
+.tx-out .tx-qty{color:var(--red);}
+.tx-adj .tx-qty{color:var(--warn);}
+.tx-proj{font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;}
+
+/* ── LOW STOCK ALERT ── */
+.alert-card{
+  background:var(--warn-lt);border:1px solid rgba(212,160,32,.3);border-radius:var(--r);
+  padding:12px 14px;margin-bottom:10px;
+  display:flex;align-items:center;gap:10px;
+}
+.alert-card.critical{background:var(--red-lt);border-color:rgba(212,64,48,.3);}
+.alert-icon{font-size:18px;}
+.alert-info{flex:1;}
+.alert-name{font-size:12px;font-weight:600;}
+.alert-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.alert-qty{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--warn);}
+.alert-card.critical .alert-qty{color:var(--red);}
+
+/* ── MODAL ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.ov.open{display:flex;animation:ovIn .2s ease;}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r) var(--r) 0 0;
+  width:100%;max-width:480px;
+  padding:20px;
+  max-height:88vh;overflow-y:auto;
+  animation:slideUp .25s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal-handle{width:36px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:14px;}
+.fl{margin-bottom:11px;}
+.fl label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:4px;}
+.fi,.fs,.fta{width:100%;padding:9px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);font-size:13px;font-family:'Sarabun',sans-serif;outline:none;transition:border-color .15s;}
+.fi:focus,.fs:focus,.fta:focus{border-color:var(--lipa);}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;padding-top:12px;border-top:1px solid var(--border);}
+
+/* QTY STEPPER */
+.stepper{display:flex;align-items:center;gap:0;border:1.5px solid var(--border2);border-radius:var(--r-sm);overflow:hidden;width:fit-content;}
+.step-btn{width:38px;height:38px;background:var(--surface2);border:none;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .12s;}
+.step-btn:hover{background:var(--surface3);}
+.step-val{width:56px;text-align:center;font-family:'DM Mono',monospace;font-size:15px;font-weight:600;background:var(--bg2);border:none;color:var(--text);padding:0 6px;height:38px;outline:none;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(80px);z-index:999;background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:24px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:var(--shadow-lg);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast.green{background:var(--green-lt);color:var(--green);border-color:rgba(82,196,122,.3);}
+.toast.red{background:var(--red-lt);color:var(--red);border-color:rgba(212,64,48,.3);}
+
+/* CATEGORY ICONS */
+.cat-elec{background:#1A102A;} .cat-light{background:#2A1A08;} .cat-bed{background:#081A14;}
+.cat-bath{background:#08141A;} .cat-tool{background:#1A1208;} .cat-furniture{background:#0A0A1A;}
+.cat-other{background:var(--surface2);}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px 20px;color:var(--muted);}
+.empty .ico{font-size:40px;margin-bottom:12px;}
+.empty p{font-size:13px;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-logo">
+    📦 Stock<em>J</em>
+    <small>Lipa · Chaweng</small>
+  </div>
+  <div class="hdr-r">
+    <button class="btn btn-ghost btn-sm" onclick="openScan()">📷 สแกน QR</button>
+    <button class="btn btn-primary btn-sm" onclick="openAddItem()">+ สินค้า</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="ni active" id="nav-stock" onclick="showView('stock',this)">📦 สต็อก <span class="ct" id="nav-ct">0</span></div>
+  <div class="ni" id="nav-scan" onclick="showView('scan',this)">📷 สแกน QR</div>
+  <div class="ni" id="nav-tx" onclick="showView('tx',this)">📋 ประวัติ</div>
+  <div class="ni" id="nav-alert" onclick="showView('alert',this)">⚠️ แจ้งเตือน <span class="ct" id="alert-ct" style="background:var(--red-lt);color:var(--red)">0</span></div>
+</div>
+
+<!-- SUMMARY STRIP -->
+<div class="strip">
+  <div class="sc green"><div class="sc-label">รายการทั้งหมด</div><div class="sc-val" id="s-total">0</div><div class="sc-sub">SKU</div></div>
+  <div class="sc orange"><div class="sc-label">มูลค่าสต็อก</div><div class="sc-val" id="s-value">฿0</div><div class="sc-sub">ประมาณการ</div></div>
+  <div class="sc red"><div class="sc-label">ใกล้หมด</div><div class="sc-val" id="s-low">0</div><div class="sc-sub">รายการ</div></div>
+  <div class="sc blue"><div class="sc-label">เบิกวันนี้</div><div class="sc-val" id="s-today">0</div><div class="sc-sub">รายการ</div></div>
+</div>
+
+<!-- ══ STOCK VIEW ══ -->
+<div class="view active" id="view-stock">
+  <div class="bar">
+    <input class="search" placeholder="ค้นหาสินค้า ชื่อ หรือ SKU…" id="sq" oninput="renderStock()">
+    <select class="fsel" id="fcat" onchange="renderStock()">
+      <option value="">ทุกหมวด</option>
+      <option value="ไฟฟ้า">⚡ ไฟฟ้า</option>
+      <option value="โคมไฟ">💡 โคมไฟ</option>
+      <option value="ชุดเครื่องนอน">🛏 เครื่องนอน</option>
+      <option value="ห้องน้ำ">🚿 ห้องน้ำ</option>
+      <option value="เครื่องมือ">🔧 เครื่องมือ</option>
+      <option value="เฟอร์นิเจอร์">🪑 เฟอร์นิเจอร์</option>
+      <option value="อื่นๆ">📦 อื่นๆ</option>
+    </select>
+    <select class="fsel" id="fproj" onchange="renderStock()">
+      <option value="">ทุกโครงการ</option>
+      <option value="Lipa">🏠 ลิปะ</option>
+      <option value="Chaweng">🏢 เฉวง</option>
+      <option value="Both">🏝 ทั้งคู่</option>
+    </select>
+  </div>
+  <div class="grid" id="stock-grid"></div>
+</div>
+
+<!-- ══ SCAN VIEW ══ -->
+<div class="view" id="view-scan">
+  <div class="scanner-wrap">
+    <div class="scanner-title">📷 สแกน QR Code</div>
+    <div class="scanner-sub">สแกน QR บนสินค้าเพื่อ ซื้อเข้า หรือ เบิกออก</div>
+    <div class="scanner-frame">
+      <video id="qr-video" autoplay playsinline muted></video>
+      <div class="scanner-overlay"></div>
+    </div>
+    <div id="scan-result" class="scan-result"></div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:12px;">
+      <button class="btn btn-ghost btn-sm" id="cam-btn" onclick="toggleCamera()">▶ เปิดกล้อง</button>
+      <button class="btn btn-ghost btn-sm" onclick="manualCode()">⌨️ พิมพ์รหัส</button>
+    </div>
+  </div>
+
+  <!-- SCAN ACTION after found -->
+  <div id="scan-action" style="display:none;">
+    <div class="scanner-wrap" style="margin-bottom:0;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:8px;" id="scan-item-name">—</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;" id="scan-item-info">—</div>
+      <div style="display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:14px;">
+        <div class="stepper">
+          <button class="step-btn" onclick="stepQty(-1)">−</button>
+          <input class="step-val" id="scan-qty" type="number" value="1" min="1">
+          <button class="step-btn" onclick="stepQty(1)">+</button>
+        </div>
+        <select class="fsel" id="scan-proj">
+          <option value="Lipa">🏠 ลิปะ</option>
+          <option value="Chaweng">🏢 เฉวง</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;">
+        <button class="btn btn-green" onclick="doScanTx('in')">📥 ซื้อเข้า</button>
+        <button class="btn btn-red" onclick="doScanTx('out')">📤 เบิกออก</button>
+        <button class="btn btn-ghost" onclick="closeScanAction()">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR GENERATOR -->
+  <div style="margin-top:14px;">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">🖨️ พิมพ์ QR สำหรับสินค้า</div>
+    <div id="qr-print-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;"></div>
+  </div>
+</div>
+
+<!-- ══ TRANSACTIONS VIEW ══ -->
+<div class="view" id="view-tx">
+  <div class="bar">
+    <select class="fsel" id="tx-filter" onchange="renderTx()">
+      <option value="">ทุกรายการ</option>
+      <option value="in">📥 ซื้อเข้า</option>
+      <option value="out">📤 เบิกออก</option>
+      <option value="adj">🔧 ปรับยอด</option>
+    </select>
+    <select class="fsel" id="tx-proj" onchange="renderTx()">
+      <option value="">ทุกโครงการ</option>
+      <option value="Lipa">🏠 ลิปะ</option>
+      <option value="Chaweng">🏢 เฉวง</option>
+    </select>
+  </div>
+  <div id="tx-list"></div>
+</div>
+
+<!-- ══ ALERT VIEW ══ -->
+<div class="view" id="view-alert">
+  <div style="font-size:12px;color:var(--muted);margin-bottom:12px;">สินค้าที่ต้องสั่งซื้อเพิ่ม</div>
+  <div id="alert-list"></div>
+</div>
+
+<!-- ══ ADD ITEM MODAL ══ -->
+<div class="ov" id="item-ov">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="im-title">➕ เพิ่มสินค้าใหม่</div>
+    <div class="fl"><label>ชื่อสินค้า *</label><input class="fi" id="im-name" placeholder="เช่น โคมไฟเพดาน LED 24W"></div>
+    <div class="fg2">
+      <div class="fl"><label>SKU / รหัส</label><input class="fi" id="im-sku" placeholder="AUTO"></div>
+      <div class="fl"><label>หมวดหมู่</label>
+        <select class="fs" id="im-cat">
+          <option>โคมไฟ</option><option>ไฟฟ้า</option><option>ชุดเครื่องนอน</option>
+          <option>ห้องน้ำ</option><option>เครื่องมือ</option><option>เฟอร์นิเจอร์</option><option>อื่นๆ</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>โครงการ</label>
+        <select class="fs" id="im-proj">
+          <option value="Lipa">🏠 ลิปะน้อย</option>
+          <option value="Chaweng">🏢 เฉวง 3 ชั้น</option>
+          <option value="Both">🏝 ทั้งสองที่</option>
+        </select>
+      </div>
+      <div class="fl"><label>ไอคอน</label><input class="fi" id="im-icon" placeholder="💡" maxlength="4"></div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>จำนวนเริ่มต้น</label><input class="fi" id="im-qty" type="number" placeholder="0" min="0"></div>
+      <div class="fl"><label>หน่วย</label><input class="fi" id="im-unit" placeholder="ชิ้น / ชุด / ม้วน"></div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>แจ้งเตือนเมื่อเหลือน้อยกว่า</label><input class="fi" id="im-min" type="number" placeholder="2" min="0"></div>
+      <div class="fl"><label>ราคา/หน่วย (฿)</label><input class="fi" id="im-price" type="number" placeholder="0"></div>
+    </div>
+    <div class="fl"><label>ที่เก็บ / Location</label><input class="fi" id="im-loc" placeholder="เช่น โกดัง ชั้น 1 / ห้องเก็บของ"></div>
+    <div class="fl"><label>โน้ต</label><textarea class="fta" id="im-note" rows="2" placeholder="ยี่ห้อ รุ่น ขนาด หรือรายละเอียดเพิ่มเติม"></textarea></div>
+    <div class="mfoot">
+      <button class="btn btn-sm" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(212,64,48,.3);margin-right:auto;display:none;" id="del-item-btn" onclick="deleteItem()">🗑 ลบ</button>
+      <button class="btn btn-ghost" onclick="closeModal('item-ov')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveItem()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TRANSACTION MODAL ══ -->
+<div class="ov" id="tx-ov">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="txm-title">📥 ซื้อเข้า</div>
+    <div style="background:var(--surface2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:14px;">
+      <div style="font-size:13px;font-weight:700;" id="txm-item-name">—</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;" id="txm-item-stock">คงเหลือ: —</div>
+    </div>
+    <div class="fl"><label>จำนวน *</label>
+      <div class="stepper">
+        <button class="step-btn" onclick="stepQtyM(-1)">−</button>
+        <input class="step-val" id="txm-qty" type="number" value="1" min="1">
+        <button class="step-btn" onclick="stepQtyM(1)">+</button>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="fl"><label>โครงการ</label>
+        <select class="fs" id="txm-proj">
+          <option value="Lipa">🏠 ลิปะ</option>
+          <option value="Chaweng">🏢 เฉวง</option>
+        </select>
+      </div>
+      <div class="fl"><label>วันที่</label><input class="fi" id="txm-date" type="date"></div>
+    </div>
+    <div class="fl"><label>หมายเหตุ</label><input class="fi" id="txm-note" placeholder="เช่น ซื้อจาก HomePro / เบิกไปห้อง 201"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('tx-ov')">ยกเลิก</button>
+      <button class="btn btn-green" id="txm-in-btn" onclick="doTx('in')">📥 ซื้อเข้า</button>
+      <button class="btn btn-red" id="txm-out-btn" onclick="doTx('out')">📤 เบิกออก</button>
+    </div>
+  </div>
+</div>
+
+<!-- MANUAL CODE MODAL -->
+<div class="ov" id="manual-ov">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">⌨️ พิมพ์รหัส SKU</div>
+    <div class="fl"><label>รหัส SKU หรือ ชื่อสินค้า</label><input class="fi" id="manual-code" placeholder="เช่น LED-001"></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeModal('manual-ov')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="processManualCode()">ค้นหา</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ QR Library (jsQR) ══
+const QR_SCRIPT = document.createElement('script');
+QR_SCRIPT.src = 'https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+document.head.appendChild(QR_SCRIPT);
+
+// QR Generator
+function qrDataUrl(text, size=80) {
+  // Simple QR using API
+  return `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}&bgcolor=1A1814&color=EDE8DC&margin=6`;
+}
+
+// ══ STATE ══
+let ITEMS = [], TXS = [];
+let editItemId = null, txItemId = null, txMode = null;
+let scanActive = false, scanStream = null, scanFoundId = null;
+let scanCanvas, scanCtx;
+
+const CAT_ICONS = {
+  'โคมไฟ':'💡','ไฟฟ้า':'⚡','ชุดเครื่องนอน':'🛏',
+  'ห้องน้ำ':'🚿','เครื่องมือ':'🔧','เฟอร์นิเจอร์':'🪑','อื่นๆ':'📦'
+};
+const CAT_CLASS = {
+  'โคมไฟ':'cat-light','ไฟฟ้า':'cat-elec','ชุดเครื่องนอน':'cat-bed',
+  'ห้องน้ำ':'cat-bath','เครื่องมือ':'cat-tool','เฟอร์นิเจอร์':'cat-furniture','อื่นๆ':'cat-other'
+};
+
+// ══ SAMPLE DATA ══
+const SAMPLE_ITEMS = [
+  // ── จากบิล Global House 10/06/69 ──
+  {id:'ITM-GH001',sku:'ELTD-TJ04-07DW',name:'EILON ดาวน์ไลท์ฝังฝ้า LED 4นิ้ว 7W ปรับได้ 3 แสง สีขาว',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:10,minQty:4,unit:'ดวง',price:125,loc:'โกดังเฉวง',note:'Global House 10/06/69 ฿1,250 รวมส่วนลด | SKU: 8859240311527'},
+
+  // ── จากบิล HomePro #6938330 — 10/06/69 ──
+  {id:'ITM-HP001',sku:'274795',name:'ดาวน์ไลท์ CARINI B0550-WH 5นิ้ว ทรงกลม สีขาว',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:129,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP002',sku:'1081378',name:'ดาวน์ไลท์ CARINI CS16-4 5นิ้ว ทรงกลม สีดำ',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:129,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP003',sku:'1199130',name:'เต้ารับคอมพิวเตอร์ ELECKTA BASIC CAT6 สีขาว',cat:'ไฟฟ้า',icon:'🔌',proj:'Chaweng',qty:2,minQty:1,unit:'ชิ้น',price:116,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP004',sku:'1199193',name:'หน้ากาก 2 ช่อง ELECKTA BASIC สีขาว',cat:'ไฟฟ้า',icon:'🔌',proj:'Chaweng',qty:5,minQty:2,unit:'ชิ้น',price:85,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP005',sku:'1199225',name:'เต้ารับเดี่ยว 3 ขา 1ช่อง ELECKTA BASIC สีขาว',cat:'ไฟฟ้า',icon:'🔌',proj:'Chaweng',qty:3,minQty:1,unit:'ชิ้น',price:117,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP006',sku:'1242629',name:'ชุดเต้ารับคู่ 3 ขากลมแบน ELECKTA VERVE สีขาว',cat:'ไฟฟ้า',icon:'🔌',proj:'Chaweng',qty:3,minQty:1,unit:'ชุด',price:387,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP007',sku:'1242647',name:'ชุดสวิตช์ 1 ทาง 2 ช่อง ELECKTA VERVE สีขาว',cat:'ไฟฟ้า',icon:'💡',proj:'Chaweng',qty:3,minQty:1,unit:'ชุด',price:345,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP008',sku:'1243109',name:'กล่องลอย ELECKTA BASIC 4x4 นิ้ว สีขาว',cat:'ไฟฟ้า',icon:'📦',proj:'Chaweng',qty:3,minQty:2,unit:'ชิ้น',price:54,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP009',sku:'1243384',name:'ชุดสวิตช์ 1 ทาง 1 ช่อง ELECKTA VERVE สีขาว',cat:'ไฟฟ้า',icon:'💡',proj:'Chaweng',qty:4,minQty:2,unit:'ชุด',price:356,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330'},
+  {id:'ITM-HP010',sku:'1295864',name:'หลอด LED CARINI A60 ECOLIFE2 5W Daylight E27 (แพ็ก 4)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:4,minQty:4,unit:'หลอด',price:119,loc:'สาขาสมุย รอรับ 11/06',note:'HomePro #6938330 — 1 แพ็ก = 4 หลอด'},
+
+  // ── จากบิล HomePro #6925130 — 06/06/69 ──
+  {id:'ITM-HP011',sku:'1238875',name:'กระจกยาวตั้งพื้น-ติดผนัง MOYA HP-2023-G 40x155 ซม.',cat:'เฟอร์นิเจอร์',icon:'🪞',proj:'Chaweng',qty:1,minQty:1,unit:'บาน',price:1490,loc:'เฉวง',note:'HomePro #6925130 06/06/69'},
+  {id:'ITM-HP012',sku:'1274819',name:'หลอด LED LAMPTAN MR16/PAR 7W Warm White GU10',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:6,minQty:3,unit:'หลอด',price:99,loc:'เฉวง',note:'HomePro #6925130 06/06/69'},
+  {id:'ITM-HP013',sku:'1287844',name:'สายล้างท่อ DEXZON 6มม. x 1.5ม.',cat:'เครื่องมือ',icon:'🔧',proj:'Chaweng',qty:1,minQty:1,unit:'เส้น',price:139,loc:'เฉวง',note:'HomePro #6925130 06/06/69'},
+  {id:'ITM-HP014',sku:'1289385',name:'ทีวี TCL 65" 4K LED Google TV 65P6K',cat:'เฟอร์นิเจอร์',icon:'📺',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:14490,loc:'เฉวง ชั้น 2/3',note:'HomePro #6925130 06/06/69 — Airbnb room'},
+
+  // ── จากบิล HomePro #6895107 — 26/05/69 ──
+  {id:'ITM-HP015',sku:'1154087',name:'ชุดดอกสว่านเจาะเหล็ก MATALL แพ็ก 19 ชิ้น',cat:'เครื่องมือ',icon:'🔩',proj:'Chaweng',qty:1,minQty:1,unit:'ชุด',price:490,loc:'โกดังเฉวง',note:'HomePro #6895107 26/05/69'},
+  {id:'ITM-HP016',sku:'1310234',name:'ชุดสว่านไร้สาย ROWEL RW-PT-TS-CSD162 16V',cat:'เครื่องมือ',icon:'🔧',proj:'Chaweng',qty:1,minQty:1,unit:'ชุด',price:4590,loc:'โกดังเฉวง',note:'HomePro #6895107 26/05/69'},
+
+  // ── รายการเดิม ──
+  {id:'ITM001',sku:'LED-001',name:'หลอดไฟ LED 9W (เย็น)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:24,minQty:6,unit:'หลอด',price:89,loc:'โกดัง ชั้น 1',note:'ยี่ห้อ Philips E27'},
+  {id:'ITM002',sku:'LED-002',name:'หลอดไฟ LED 9W (วอร์ม)',cat:'โคมไฟ',icon:'💡',proj:'Both',qty:18,minQty:6,unit:'หลอด',price:89,loc:'โกดัง ชั้น 1',note:'ยี่ห้อ Philips E27'},
+  {id:'ITM004',sku:'LMP-002',name:'โคมไฟกิ่งหัวนอน (Japandi)',cat:'โคมไฟ',icon:'🕯️',proj:'Lipa',qty:4,minQty:2,unit:'ชิ้น',price:890,loc:'ห้องนอน',note:'สั่งแล้ว รอส่ง'},
+  {id:'ITM005',sku:'BED-001',name:'ชุดผ้าปูที่นอน 3.5 ฟุต',cat:'ชุดเครื่องนอน',icon:'🛏',proj:'Lipa',qty:3,minQty:2,unit:'ชุด',price:650,loc:'ตู้เสื้อผ้า',note:'สีขาว/เทา'},
+  {id:'ITM006',sku:'BED-002',name:'ชุดผ้าปูที่นอน 6 ฟุต',cat:'ชุดเครื่องนอน',icon:'🛏',proj:'Chaweng',qty:2,minQty:3,unit:'ชุด',price:850,loc:'ตู้เสื้อผ้า',note:'สีขาว — ใกล้หมด!'},
+  {id:'ITM009',sku:'BTH-001',name:'ชุดฝักบัวอาบน้ำ',cat:'ห้องน้ำ',icon:'🚿',proj:'Lipa',qty:2,minQty:1,unit:'ชุด',price:1200,loc:'ห้องน้ำชั้น 2',note:'มอก. รับประกัน 1 ปี'},
+  {id:'ITM011',sku:'TL-001',name:'สายไฟ 2.5 (ม้วน 50ม)',cat:'ไฟฟ้า',icon:'⚡',proj:'Chaweng',qty:3,minQty:2,unit:'ม้วน',price:1850,loc:'โกดัง',note:'เหลือ 3 ม้วน จาก 6'},
+  {id:'ITM012',sku:'FUR-001',name:'หมอน (ใบ)',cat:'เฟอร์นิเจอร์',icon:'🪑',proj:'Chaweng',qty:8,minQty:4,unit:'ใบ',price:250,loc:'ห้องพัก',note:''},
+];
+
+// ══ RENDER ══
+function renderStock() {
+  const q = (document.getElementById('sq')?.value||'').toLowerCase();
+  const cat = document.getElementById('fcat')?.value||'';
+  const prj = document.getElementById('fproj')?.value||'';
+  const filtered = ITEMS.filter(i=>{
+    if(cat && i.cat!==cat) return false;
+    if(prj && i.proj!==prj) return false;
+    if(q && !i.name.toLowerCase().includes(q) && !i.sku.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  const total = ITEMS.length;
+  const low = ITEMS.filter(i=>i.qty>0&&i.qty<=i.minQty).length;
+  const out = ITEMS.filter(i=>i.qty===0).length;
+  const value = ITEMS.reduce((s,i)=>s+(i.qty*i.price),0);
+  const todayTx = TXS.filter(t=>{
+    const d=new Date(t.date);const n=new Date();
+    return d.toDateString()===n.toDateString()&&t.type==='out';
+  }).length;
+
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-value').textContent='฿'+value.toLocaleString();
+  document.getElementById('s-low').textContent=low+out;
+  document.getElementById('s-today').textContent=todayTx;
+  document.getElementById('nav-ct').textContent=total;
+  document.getElementById('alert-ct').textContent=low+out;
+
+  const el=document.getElementById('stock-grid');
+  if(!filtered.length){el.innerHTML=`<div class="empty" style="grid-column:1/-1"><div class="ico">📦</div><p>ไม่พบสินค้า</p></div>`;return;}
+
+  el.innerHTML = filtered.map(i=>{
+    const pct = i.minQty>0?Math.min(Math.round(i.qty/(i.minQty*3)*100),100):100;
+    const cls = i.qty===0?'out-stock':i.qty<=i.minQty?'low-stock':'ok-stock';
+    const qtyCls = i.qty===0?'out':i.qty<=i.minQty?'low':'ok';
+    const barColor = i.qty===0?'var(--red)':i.qty<=i.minQty?'var(--warn)':'var(--green)';
+    const projBadge = i.proj==='Lipa'?'badge-lipa':i.proj==='Chaweng'?'badge-chaweng':'badge-both';
+    const projLabel = i.proj==='Lipa'?'🏠 ลิปะ':i.proj==='Chaweng'?'🏢 เฉวง':'🏝 ทั้งคู่';
+    const icon = i.icon||CAT_ICONS[i.cat]||'📦';
+    const catCls = CAT_CLASS[i.cat]||'cat-other';
+    return`<div class="item-card ${cls}" onclick="openTxModal('${i.id}')">
+      <div class="ic-top">
+        <div><div class="ic-name">${i.name}</div><div class="ic-sku">${i.sku}</div></div>
+        <div class="ic-badge ${projBadge}">${projLabel}</div>
+      </div>
+      <div class="ic-mid">
+        <div class="ic-icon ${catCls}">${icon}</div>
+        <div class="ic-stock">
+          <div class="stock-nums">
+            <div><span class="stock-qty ${qtyCls}">${i.qty}</span><span class="stock-unit">${i.unit}</span></div>
+            <div class="stock-min">min: ${i.minQty}</div>
+          </div>
+          <div class="stock-bar-track"><div class="stock-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <div style="font-size:10px;color:var(--muted)">${i.cat}${i.loc?' · '+i.loc:''}</div>
+        </div>
+      </div>
+      <div class="ic-foot">
+        <div class="ic-price">${i.price>0?'฿'+i.price+'/'+i.unit:''}</div>
+        <div class="ic-actions" onclick="event.stopPropagation()">
+          <button class="ia in" title="ซื้อเข้า" onclick="openTxDirect('${i.id}','in')">📥</button>
+          <button class="ia out" title="เบิกออก" onclick="openTxDirect('${i.id}','out')">📤</button>
+          <button class="ia" title="แก้ไข" onclick="openEditItem('${i.id}')">✏️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderTx() {
+  const tf = document.getElementById('tx-filter')?.value||'';
+  const tp = document.getElementById('tx-proj')?.value||'';
+  const filtered = [...TXS].reverse().filter(t=>{
+    if(tf && t.type!==tf) return false;
+    if(tp && t.proj!==tp) return false;
+    return true;
+  });
+  const el = document.getElementById('tx-list');
+  if(!filtered.length){el.innerHTML=`<div class="empty"><div class="ico">📋</div><p>ยังไม่มีประวัติ</p></div>`;return;}
+  el.innerHTML = filtered.map(t=>{
+    const item = ITEMS.find(i=>i.id===t.itemId);
+    const typeCls = t.type==='in'?'tx-in':t.type==='out'?'tx-out':'tx-adj';
+    const typeIcon = t.type==='in'?'📥':t.type==='out'?'📤':'🔧';
+    const typeLabel = t.type==='in'?'ซื้อเข้า':t.type==='out'?'เบิกออก':'ปรับยอด';
+    const sign = t.type==='in'?'+':t.type==='out'?'−':'±';
+    const projCls = t.proj==='Lipa'?'badge-lipa':'badge-chaweng';
+    return`<div class="tx-row ${typeCls}">
+      <div class="tx-icon">${typeIcon}</div>
+      <div class="tx-info">
+        <div class="tx-name">${item?.name||t.itemName||'—'}</div>
+        <div class="tx-meta">${typeLabel} · ${t.date} · ${t.note||'—'}</div>
+      </div>
+      <div>
+        <div class="tx-qty">${sign}${t.qty} ${item?.unit||''}</div>
+        <div style="text-align:right;margin-top:2px"><span class="tx-proj ic-badge ${projCls}">${t.proj==='Lipa'?'ลิปะ':'เฉวง'}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAlerts() {
+  const low = ITEMS.filter(i=>i.qty>0&&i.qty<=i.minQty);
+  const out = ITEMS.filter(i=>i.qty===0);
+  const el = document.getElementById('alert-list');
+  if(!low.length&&!out.length){el.innerHTML=`<div class="empty"><div class="ico">✅</div><p>สต็อกปกติ ไม่มีรายการแจ้งเตือน</p></div>`;return;}
+  el.innerHTML = [
+    ...out.map(i=>`<div class="alert-card critical">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-info"><div class="alert-name">${i.name}</div><div class="alert-sub">${i.cat} · ${i.loc||'—'}</div></div>
+      <div class="alert-qty">หมด!</div>
+    </div>`),
+    ...low.map(i=>`<div class="alert-card">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-info"><div class="alert-name">${i.name}</div><div class="alert-sub">เหลือ ${i.qty} ${i.unit} (min: ${i.minQty})</div></div>
+      <div class="alert-qty">${i.qty} ${i.unit}</div>
+    </div>`)
+  ].join('');
+}
+
+function renderQrGrid() {
+  const el = document.getElementById('qr-print-grid');
+  el.innerHTML = ITEMS.slice(0,20).map(i=>`
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px;text-align:center;cursor:pointer;" onclick="showQrBig('${i.id}')">
+      <img src="${qrDataUrl(i.sku,60)}" style="width:60px;height:60px;border-radius:4px;">
+      <div style="font-size:9px;color:var(--muted);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.sku}</div>
+    </div>`).join('');
+}
+
+// ══ ITEM MODAL ══
+function openAddItem() {
+  editItemId=null;
+  document.getElementById('im-title').textContent='➕ เพิ่มสินค้าใหม่';
+  document.getElementById('del-item-btn').style.display='none';
+  ['im-name','im-sku','im-icon','im-loc','im-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('im-qty').value='0';
+  document.getElementById('im-min').value='2';
+  document.getElementById('im-price').value='0';
+  document.getElementById('im-unit').value='ชิ้น';
+  document.getElementById('im-cat').value='โคมไฟ';
+  document.getElementById('im-proj').value='Chaweng';
+  document.getElementById('item-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('im-name').focus(),100);
+}
+function openEditItem(id) {
+  const item=ITEMS.find(i=>i.id===id); if(!item) return;
+  editItemId=id;
+  document.getElementById('im-title').textContent='✏️ แก้ไขสินค้า';
+  document.getElementById('del-item-btn').style.display='flex';
+  document.getElementById('im-name').value=item.name;
+  document.getElementById('im-sku').value=item.sku;
+  document.getElementById('im-cat').value=item.cat;
+  document.getElementById('im-proj').value=item.proj;
+  document.getElementById('im-icon').value=item.icon||'';
+  document.getElementById('im-qty').value=item.qty;
+  document.getElementById('im-unit').value=item.unit;
+  document.getElementById('im-min').value=item.minQty;
+  document.getElementById('im-price').value=item.price;
+  document.getElementById('im-loc').value=item.loc||'';
+  document.getElementById('im-note').value=item.note||'';
+  document.getElementById('item-ov').classList.add('open');
+}
+function saveItem() {
+  const name=document.getElementById('im-name').value.trim(); if(!name) return;
+  const sku=document.getElementById('im-sku').value.trim()||'ITM'+Date.now().toString().slice(-4);
+  const d={name,sku,cat:document.getElementById('im-cat').value,proj:document.getElementById('im-proj').value,icon:document.getElementById('im-icon').value.trim()||CAT_ICONS[document.getElementById('im-cat').value]||'📦',qty:parseInt(document.getElementById('im-qty').value)||0,unit:document.getElementById('im-unit').value||'ชิ้น',minQty:parseInt(document.getElementById('im-min').value)||2,price:parseFloat(document.getElementById('im-price').value)||0,loc:document.getElementById('im-loc').value.trim(),note:document.getElementById('im-note').value.trim()};
+  if(editItemId){const i=ITEMS.findIndex(x=>x.id===editItemId);ITEMS[i]={...ITEMS[i],...d};}
+  else{ITEMS.push({...d,id:'ITM'+Date.now()});}
+  save();closeModal('item-ov');renderAll();toast(editItemId?'✅ แก้ไขแล้ว':'✅ เพิ่มสินค้าแล้ว','green');
+}
+function deleteItem() {
+  if(!editItemId) return;
+  const item=ITEMS.find(i=>i.id===editItemId);
+  if(!confirm(`ลบ "${item?.name}"?`)) return;
+  ITEMS=ITEMS.filter(i=>i.id!==editItemId);
+  save();closeModal('item-ov');renderAll();toast('ลบแล้ว','');
+}
+
+// ══ TRANSACTION ══
+function openTxModal(id) {
+  txItemId=id; txMode=null;
+  const item=ITEMS.find(i=>i.id===id); if(!item) return;
+  document.getElementById('txm-title').textContent='📦 '+item.name;
+  document.getElementById('txm-item-name').textContent=item.name;
+  document.getElementById('txm-item-stock').textContent=`คงเหลือ: ${item.qty} ${item.unit} · SKU: ${item.sku}`;
+  document.getElementById('txm-qty').value='1';
+  document.getElementById('txm-proj').value=item.proj==='Both'?'Lipa':item.proj;
+  document.getElementById('txm-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('txm-note').value='';
+  document.getElementById('tx-ov').classList.add('open');
+}
+function openTxDirect(id, mode) {
+  txItemId=id; txMode=mode;
+  const item=ITEMS.find(i=>i.id===id); if(!item) return;
+  document.getElementById('txm-title').textContent=(mode==='in'?'📥 ซื้อเข้า':'📤 เบิกออก')+' — '+item.name;
+  document.getElementById('txm-item-name').textContent=item.name;
+  document.getElementById('txm-item-stock').textContent=`คงเหลือ: ${item.qty} ${item.unit}`;
+  document.getElementById('txm-qty').value='1';
+  document.getElementById('txm-proj').value=item.proj==='Both'?'Lipa':item.proj;
+  document.getElementById('txm-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('txm-note').value='';
+  document.getElementById('tx-ov').classList.add('open');
+}
+function doTx(mode) {
+  const id=txItemId; const item=ITEMS.find(i=>i.id===id); if(!item) return;
+  const qty=parseInt(document.getElementById('txm-qty').value)||1;
+  const proj=document.getElementById('txm-proj').value;
+  const date=document.getElementById('txm-date').value;
+  const note=document.getElementById('txm-note').value;
+  if(mode==='out'&&qty>item.qty){toast('❌ จำนวนเกินสต็อก','red');return;}
+  item.qty=mode==='in'?item.qty+qty:item.qty-qty;
+  TXS.push({id:'TX'+Date.now(),itemId:id,itemName:item.name,type:mode,qty,proj,date,note});
+  save();closeModal('tx-ov');renderAll();
+  toast(`${mode==='in'?'📥 ซื้อเข้า':'📤 เบิกออก'} ${qty} ${item.unit} — ${item.name}`, mode==='in'?'green':'');
+}
+function stepQtyM(d){const el=document.getElementById('txm-qty');el.value=Math.max(1,parseInt(el.value||1)+d);}
+
+// ══ QR SCANNER ══
+function openScan() { showView('scan',document.getElementById('nav-scan')); toggleCamera(); }
+
+async function toggleCamera() {
+  const btn=document.getElementById('cam-btn');
+  if(scanActive){stopCamera();return;}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    scanStream=stream;
+    const video=document.getElementById('qr-video');
+    video.srcObject=stream;
+    scanCanvas=document.createElement('canvas');
+    scanCtx=scanCanvas.getContext('2d');
+    scanActive=true;
+    btn.textContent='⏹ ปิดกล้อง';
+    requestAnimationFrame(scanFrame);
+  }catch(e){
+    toast('❌ ไม่สามารถเปิดกล้องได้','red');
+  }
+}
+
+function stopCamera() {
+  if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}
+  scanActive=false;
+  const btn=document.getElementById('cam-btn');
+  if(btn) btn.textContent='▶ เปิดกล้อง';
+}
+
+function scanFrame() {
+  if(!scanActive) return;
+  const video=document.getElementById('qr-video');
+  if(video.readyState===video.HAVE_ENOUGH_DATA){
+    scanCanvas.width=video.videoWidth;
+    scanCanvas.height=video.videoHeight;
+    scanCtx.drawImage(video,0,0);
+    const imgData=scanCtx.getImageData(0,0,scanCanvas.width,scanCanvas.height);
+    if(typeof jsQR!=='undefined'){
+      const code=jsQR(imgData.data,imgData.width,imgData.height);
+      if(code){
+        stopCamera();
+        processQrCode(code.data);
+        return;
+      }
+    }
+  }
+  requestAnimationFrame(scanFrame);
+}
+
+function processQrCode(code) {
+  const item=ITEMS.find(i=>i.sku===code||i.id===code||i.name===code);
+  const resultEl=document.getElementById('scan-result');
+  if(item){
+    scanFoundId=item.id;
+    resultEl.className='scan-result show';
+    resultEl.textContent=`✅ พบสินค้า: ${item.name} (คงเหลือ: ${item.qty} ${item.unit})`;
+    document.getElementById('scan-item-name').textContent=item.name;
+    document.getElementById('scan-item-info').textContent=`SKU: ${item.sku} · คงเหลือ: ${item.qty} ${item.unit} · ${item.cat}`;
+    document.getElementById('scan-proj').value=item.proj==='Both'?'Lipa':item.proj;
+    document.getElementById('scan-qty').value='1';
+    document.getElementById('scan-action').style.display='block';
+    toast('📷 สแกนสำเร็จ: '+item.name,'green');
+  } else {
+    resultEl.className='scan-result show';
+    resultEl.style.cssText='display:block;background:var(--red-lt);border-color:rgba(212,64,48,.3);color:var(--red);';
+    resultEl.textContent=`❌ ไม่พบสินค้า SKU: "${code}"`;
+    toast('ไม่พบสินค้า','red');
+  }
+}
+
+function doScanTx(mode) {
+  if(!scanFoundId) return;
+  const item=ITEMS.find(i=>i.id===scanFoundId); if(!item) return;
+  const qty=parseInt(document.getElementById('scan-qty').value)||1;
+  const proj=document.getElementById('scan-proj').value;
+  if(mode==='out'&&qty>item.qty){toast('❌ จำนวนเกินสต็อก','red');return;}
+  item.qty=mode==='in'?item.qty+qty:item.qty-qty;
+  TXS.push({id:'TX'+Date.now(),itemId:item.id,itemName:item.name,type:mode,qty,proj,date:new Date().toISOString().split('T')[0],note:'สแกน QR'});
+  save();renderAll();closeScanAction();
+  toast(`${mode==='in'?'📥 ซื้อเข้า':'📤 เบิกออก'} ${qty} ${item.unit} — ${item.name}`,mode==='in'?'green':'');
+}
+
+function closeScanAction() {
+  document.getElementById('scan-action').style.display='none';
+  document.getElementById('scan-result').className='scan-result';
+  scanFoundId=null;
+}
+
+function stepQty(d){const el=document.getElementById('scan-qty');el.value=Math.max(1,parseInt(el.value||1)+d);}
+
+function manualCode() {
+  document.getElementById('manual-code').value='';
+  document.getElementById('manual-ov').classList.add('open');
+  setTimeout(()=>document.getElementById('manual-code').focus(),80);
+}
+function processManualCode() {
+  const code=document.getElementById('manual-code').value.trim();
+  if(!code) return;
+  closeModal('manual-ov');
+  processQrCode(code);
+}
+
+function showQrBig(id) {
+  const item=ITEMS.find(i=>i.id===id); if(!item) return;
+  const w=window.open('','_blank','width=300,height=350');
+  w.document.write(`<html><body style="background:#1A1814;text-align:center;padding:20px;font-family:sans-serif;">
+    <img src="${qrDataUrl(item.sku,200)}" style="width:200px;height:200px;border-radius:8px;">
+    <p style="color:#EDE8DC;font-size:14px;font-weight:700;margin-top:12px">${item.name}</p>
+    <p style="color:#7A7060;font-size:12px">${item.sku}</p>
+    <button onclick="window.print()" style="margin-top:12px;background:#E8903A;color:#0C0B09;border:none;padding:8px 18px;border-radius:6px;cursor:pointer;font-weight:700">พิมพ์</button>
+  </body></html>`);
+}
+
+// ══ NAVIGATION ══
+function showView(name,el) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  if(name==='tx') renderTx();
+  if(name==='alert') renderAlerts();
+  if(name==='scan') renderQrGrid();
+  if(name!=='scan') stopCamera();
+}
+
+// ══ HELPERS ══
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function renderAll(){renderStock();renderAlerts();}
+function save(){try{localStorage.setItem('stock_items',JSON.stringify(ITEMS));localStorage.setItem('stock_txs',JSON.stringify(TXS));}catch(e){}}
+function load(){try{const i=localStorage.getItem('stock_items');const t=localStorage.getItem('stock_txs');if(i)ITEMS=JSON.parse(i);if(t)TXS=JSON.parse(t);}catch(e){}}
+
+let _tt=null;
+function toast(msg,type){
+  const el=document.getElementById('toast');
+  clearTimeout(_tt);
+  el.textContent=msg;
+  el.className='toast show'+(type?' '+type:'');
+  _tt=setTimeout(()=>el.className='toast',3000);
+}
+
+document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){stopCamera();o.classList.remove('open');}}));
+
+// ══ INIT ══
+load();
+if(!ITEMS.length) ITEMS=[...SAMPLE_ITEMS];
+renderAll();
+</script>
+</body>
+</html>

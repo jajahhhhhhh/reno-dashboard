@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard J — Lipa & Chaweng</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0C0B09;--surface:#1A1814;--border:#383228;
+  --text:#EDE8DC;--muted:#7A7060;
+  --lipa:#E8903A;--chaweng:#4A8EC4;--green:#52C47A;
+  --shadow:0 8px 40px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+.hdr{
+  background:rgba(26,24,20,.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.logo{font-family:'DM Serif Display',serif;font-size:20px;}
+.logo em{color:var(--lipa);font-style:normal;}
+.logo small{font-size:11px;color:var(--muted);font-weight:400;margin-left:10px;}
+.last-update{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.hero{
+  text-align:center;padding:60px 24px 48px;
+  background:radial-gradient(ellipse at top,rgba(232,144,58,.08) 0%,transparent 60%);
+}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(28px,5vw,48px);line-height:1.15;margin-bottom:12px;}
+.hero h1 em{color:var(--lipa);font-style:normal;}
+.hero p{font-size:14px;color:var(--muted);max-width:440px;margin:0 auto 32px;line-height:1.7;}
+
+.cards{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;padding:0 24px 48px;max-width:900px;margin:0 auto;width:100%;
+}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:24px;text-decoration:none;color:var(--text);
+  transition:all .2s;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.card.lipa::before{background:var(--lipa);}
+.card.chaweng::before{background:var(--chaweng);}
+.card.stock::before{background:var(--green);}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:#464034;}
+
+.card-icon{font-size:32px;margin-bottom:14px;}
+.card-title{font-size:17px;font-weight:700;margin-bottom:6px;}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.65;flex:1;}
+.card-arrow{
+  margin-top:16px;align-self:flex-start;
+  font-size:12px;font-weight:700;
+  display:flex;align-items:center;gap:5px;
+  transition:gap .2s;
+}
+.card.lipa .card-arrow{color:var(--lipa);}
+.card.chaweng .card-arrow{color:var(--chaweng);}
+.card.stock .card-arrow{color:var(--green);}
+.card:hover .card-arrow{gap:9px;}
+
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px;padding:0 24px 48px;max-width:900px;margin:0 auto;width:100%;
+}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;text-align:center;}
+.stat-val{font-size:22px;font-weight:700;font-family:'DM Serif Display',serif;}
+.stat-val.orange{color:var(--lipa);}
+.stat-val.blue{color:var(--chaweng);}
+.stat-val.green{color:var(--green);}
+.stat-label{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.06em;}
+
+.footer{
+  margin-top:auto;border-top:1px solid var(--border);
+  padding:16px 24px;text-align:center;
+  font-size:11px;color:var(--muted);
+}
+.footer strong{color:var(--lipa);}
+
+/* MOBILE */
+@media(max-width:480px){
+  .hero{padding:40px 16px 32px;}
+  .cards,.stats{padding:0 16px 32px;}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="logo">Dashboard<em>J</em> <small>🏝️ Koh Samui</small></div>
+  <div class="last-update">
+    <div class="live-dot"></div>
+    <span id="last-sync">กำลังโหลด…</span>
+  </div>
+</div>
+
+<div class="hero">
+  <h1>ลิปะน้อย &amp; <em>เฉวง</em><br>Renovation HQ</h1>
+  <p>ระบบติดตามงานก่อสร้าง การเงิน และสต็อกวัสดุ<br>สำหรับโครงการ Koh Samui ทั้งสองที่</p>
+</div>
+
+<div class="stats" id="stats-row">
+  <div class="stat"><div class="stat-val orange" id="st-lipa">฿0</div><div class="stat-label">🏠 ลิปะ จ่ายแล้ว</div></div>
+  <div class="stat"><div class="stat-val blue" id="st-chaweng">฿0</div><div class="stat-label">🏢 เฉวง จ่ายแล้ว</div></div>
+  <div class="stat"><div class="stat-val green" id="st-tasks">0%</div><div class="stat-label">✅ ความคืบหน้า</div></div>
+  <div class="stat"><div class="stat-val" id="st-stock">0</div><div class="stat-label">📦 รายการสต็อก</div></div>
+</div>
+
+<div class="cards">
+  <a href="dashboard-final.html" class="card lipa">
+    <div class="card-icon">🏗️</div>
+    <div class="card-title">Renovation Dashboard</div>
+    <div class="card-desc">Kanban Board แยก ลิปะ / เฉวง · ติดตามงานทุกรายการ · บัญชีการเงิน · AI อ่าน LINE อัตโนมัติ</div>
+    <div class="card-arrow">เปิด Dashboard →</div>
+  </a>
+
+  <a href="inventory-system.html" class="card stock">
+    <div class="card-icon">📦</div>
+    <div class="card-title">Stock & Inventory</div>
+    <div class="card-desc">ระบบคุมสต็อกวัสดุ · สแกน QR Code · ซื้อเข้า / เบิกออก · แจ้งเตือนสต็อกต่ำ · 16 SKU จากบิลจริง</div>
+    <div class="card-arrow">เปิด Inventory →</div>
+  </a>
+</div>
+
+<div class="footer">
+  สร้างโดย <strong>Dashboard J</strong> · อัปเดตอัตโนมัติเมื่ออัปโหลดไฟล์ใหม่ · <span id="build-date"></span>
+</div>
+
+<script>
+// ── Load stats from localStorage ──
+function loadStats() {
+  try {
+    const tasks = JSON.parse(localStorage.getItem('dj_tasks')||'[]');
+    const pays = JSON.parse(localStorage.getItem('dj_pays')||'[]');
+    const stock = JSON.parse(localStorage.getItem('stock_items')||'[]');
+
+    const lPaid = pays.filter(p=>p.proj==='Lipa'&&p.status==='paid').reduce((s,p)=>s+(p.amount||0),0);
+    const cPaid = pays.filter(p=>p.proj==='Chaweng'&&p.status==='paid').reduce((s,p)=>s+(p.amount||0),0);
+    const done = tasks.filter(t=>t.s==='Done').length;
+    const pct = tasks.length ? Math.round(done/tasks.length*100) : 0;
+
+    if(lPaid) document.getElementById('st-lipa').textContent = '฿'+lPaid.toLocaleString();
+    if(cPaid) document.getElementById('st-chaweng').textContent = '฿'+cPaid.toLocaleString();
+    if(tasks.length) document.getElementById('st-tasks').textContent = pct+'%';
+    if(stock.length) document.getElementById('st-stock').textContent = stock.length;
+  } catch(e){}
+
+  const now = new Date();
+  document.getElementById('last-sync').textContent = 'อัปเดต ' + now.toLocaleString('th-TH',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('build-date').textContent = now.toLocaleDateString('th-TH');
+}
+loadStats();
+setInterval(loadStats, 30000);
+</script>
+</body>
+</html>
