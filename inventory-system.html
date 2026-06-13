@@ -7,17 +7,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0C0B09; --bg2:#131210; --surface:#1A1814; --surface2:#222018;
-  --surface3:#2A2720; --border:#383228; --border2:#443C30;
-  --text:#EDE8DC; --muted:#7A7060; --muted2:#4A4438;
-  --lipa:#E8903A; --lipa-lt:#2A1808; --lipa-dim:#C07828;
-  --chaweng:#4A8EC4; --chaweng-lt:#081828; --chaweng-dim:#3A7AAE;
-  --green:#52C47A; --green-lt:#081A10; --green-dim:#3A9A5A;
-  --red:#D44030; --red-lt:#200808;
-  --warn:#D4A020; --warn-lt:#201808;
-  --purple:#9A60D4; --purple-lt:#180A28;
-  --shadow:0 2px 16px rgba(0,0,0,.5);
-  --shadow-lg:0 8px 48px rgba(0,0,0,.7);
+  /* ☕ LIGHT ROAST — warm cream coffee theme */
+  --bg:#F4EEE3; --bg2:#EFE7D8; --surface:#FBF7EF; --surface2:#F2EADC;
+  --surface3:#E9DFCD; --border:#DDD0BA; --border2:#CFC0A4;
+  --text:#3A3026; --muted:#8A7B64; --muted2:#AC9D85;
+  --lipa:#C76E1A; --lipa-lt:#FBEAD6; --lipa-dim:#A85A12;
+  --chaweng:#2E6FA0; --chaweng-lt:#E0EDF6; --chaweng-dim:#245880;
+  --green:#3E9466; --green-lt:#E0F0E6; --green-dim:#2E7A52;
+  --red:#C0392B; --red-lt:#FAE4E0;
+  --warn:#B5851A; --warn-lt:#F8EFD6;
+  --purple:#7E52B0; --purple-lt:#EFE6F7;
+  --shadow:0 2px 16px rgba(120,90,50,.12);
+  --shadow-lg:0 8px 48px rgba(120,90,50,.20);
   --r:10px; --r-sm:6px; --r-xs:4px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -39,11 +40,11 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 
 /* ── BUTTONS ── */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r-sm);font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:'Sarabun',sans-serif;transition:all .15s;}
-.btn-primary{background:var(--lipa);color:#0C0B09;}
+.btn-primary{background:var(--lipa);color:#fff;}
 .btn-primary:hover{background:var(--lipa-dim);}
 .btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--muted);}
 .btn-ghost:hover{background:var(--surface2);color:var(--text);}
-.btn-green{background:var(--green);color:#0C0B09;}
+.btn-green{background:var(--green);color:#fff;}
 .btn-green:hover{background:var(--green-dim);}
 .btn-red{background:var(--red);color:#fff;}
 .btn-sm{padding:5px 10px;font-size:11px;}
@@ -205,7 +206,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
 .alert-card.critical .alert-qty{color:var(--red);}
 
 /* ── MODAL ── */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.ov{display:none;position:fixed;inset:0;background:rgba(58,48,38,.45);z-index:300;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
 .ov.open{display:flex;animation:ovIn .2s ease;}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
 .modal{
@@ -285,7 +286,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <input class="search" placeholder="ค้นหาสินค้า ชื่อ หรือ SKU…" id="sq" oninput="renderStock()">
     <select class="fsel" id="fcat" onchange="renderStock()">
       <option value="">ทุกหมวด</option>
-      <option value="เครื่องใช้ไฟฟ้า">⚡ เครื่องใช้ไฟฟ้า</option>
+      <option value="ไฟฟ้า">⚡ ไฟฟ้า</option>
       <option value="โคมไฟ">💡 โคมไฟ</option>
       <option value="ชุดเครื่องนอน">🛏 เครื่องนอน</option>
       <option value="ห้องน้ำ">🚿 ห้องน้ำ</option>
@@ -423,7 +424,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div class="fl"><label>แจ้งเตือนเมื่อเหลือน้อยกว่า</label><input class="fi" id="im-min" type="number" placeholder="2" min="0"></div>
       <div class="fl"><label>ราคา/หน่วย (฿)</label><input class="fi" id="im-price" type="number" placeholder="0"></div>
     </div>
-    <div class="fl"><label>ที่เก็บ / Location</label><input class="fi" id="im-loc" placeholder="Rock Garden Store"></div>
+    <div class="fl"><label>ที่เก็บ / Location</label><input class="fi" id="im-loc" placeholder="เช่น โกดัง ชั้น 1 / ห้องเก็บของ"></div>
     <div class="fl"><label>โน้ต</label><textarea class="fta" id="im-note" rows="2" placeholder="ยี่ห้อ รุ่น ขนาด หรือรายละเอียดเพิ่มเติม"></textarea></div>
     <div class="mfoot">
       <button class="btn btn-sm" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(212,64,48,.3);margin-right:auto;display:none;" id="del-item-btn" onclick="deleteItem()">🗑 ลบ</button>
@@ -514,18 +515,6 @@ const CAT_CLASS = {
 
 // ══ SAMPLE DATA ══
 const SAMPLE_ITEMS = [
-  // ── จากบิล HomePro #6938835 — 11/06/69 (รับสาขาเฉวง สำเร็จ) ──
-  {id:'ITM-HP034',sku:'274795',name:'ดาวน์ไลท์ CARINI B0550-WH 5นิ้ว ทรงกลม สีขาว',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:4,minQty:2,unit:'ชิ้น',price:119,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP035',sku:'1081378',name:'ดาวน์ไลท์ CARINI CS16-4 5นิ้ว ทรงกลม สีดำ',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:129,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP036',sku:'1082005',name:'ห่วงม่าน MOYA SH0013E สีโครม',cat:'เฟอร์นิเจอร์',icon:'🪝',proj:'Chaweng',qty:2,minQty:1,unit:'ชิ้น',price:49,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — รวม ฿98'},
-  {id:'ITM-HP037',sku:'1268597',name:'แผ่นอเนกประสงค์ HOME LIVING STYLE STILL 90x150 ซม. สีเทา',cat:'อื่นๆ',icon:'🟦',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:139,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP038',sku:'1281117',name:'ดินผสมขุยไผ่ SPRING 5 กก.',cat:'อื่นๆ',icon:'🪴',proj:'Chaweng',qty:1,minQty:1,unit:'ถุง',price:29,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP039',sku:'1292831',name:'แผ่นรองเม้าส์ SNAZZ NOVA 40x100 ซม. สีเขียว',cat:'อื่นๆ',icon:'🖱️',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:269,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP040',sku:'1293781',name:'เสื่อโยคะ SNAZZ LUXE 68x183 ซม. สีน้ำเงิน',cat:'อื่นๆ',icon:'🧘',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:619,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP041',sku:'1295845',name:'หลอด LED CARINI A60 ECOLIFE2 5W Warm White E27 (แพ็ก 4)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:2,minQty:1,unit:'แพ็ก',price:119,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — 1 แพ็ก = 4 หลอด'},
-  {id:'ITM-HP042',sku:'1295876',name:'หลอด LED CARINI A60 ECOLIFE2 7W Cool White E27 (แพ็ก 4)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:2,minQty:1,unit:'แพ็ก',price:139,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — 1 แพ็ก = 4 หลอด'},
-  {id:'ITM-HP043',sku:'1296840',name:'หัวต่อก๊อกน้ำ MOYA MY ABS-019-1',cat:'ห้องน้ำ',icon:'🚿',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:159,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP044',sku:'1298478',name:'พรมพียู HOME LIVING STYLE FINIX 45x70 ซม. สีดำ',cat:'อื่นๆ',icon:'🧹',proj:'Chaweng',qty:4,minQty:1,unit:'ชิ้น',price:269,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — ซื้อ 2 + รับฟรี 2 ชิ้น'},
   // ── จากบิล HomePro 629208 — 17/05/69 เครื่องใช้ไฟฟ้า Airbnb ──
   {id:'ITM-HP020',sku:'2400002244187',name:'ไมโครเวฟ ELECTROLUX EMM20K22B 20L',cat:'เฟอร์นิเจอร์',icon:'📦',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:1790,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
   {id:'ITM-HP021',sku:'2400002866259',name:'กาต้มน้ำไฟฟ้า EKONO EK01 สีเงิน',cat:'เฟอร์นิเจอร์',icon:'☕',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:199,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
@@ -783,14 +772,13 @@ function openAddItem() {
   currentPhoto=null; showPhotoPreview(null);
   document.getElementById('im-title').textContent='➕ เพิ่มสินค้าใหม่';
   document.getElementById('del-item-btn').style.display='none';
-  ['im-name','im-sku','im-icon','im-note'].forEach(id=>document.getElementById(id).value='');
+  ['im-name','im-sku','im-icon','im-loc','im-note'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('im-qty').value='0';
   document.getElementById('im-min').value='2';
   document.getElementById('im-price').value='0';
   document.getElementById('im-unit').value='ชิ้น';
   document.getElementById('im-cat').value='โคมไฟ';
   document.getElementById('im-proj').value='Chaweng';
-  document.getElementById('im-loc').value='Rock Garden Store';
   document.getElementById('item-ov').classList.add('open');
   setTimeout(()=>document.getElementById('im-name').focus(),100);
 }
