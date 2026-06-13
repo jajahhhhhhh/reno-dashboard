@@ -424,7 +424,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
       <div class="fl"><label>แจ้งเตือนเมื่อเหลือน้อยกว่า</label><input class="fi" id="im-min" type="number" placeholder="2" min="0"></div>
       <div class="fl"><label>ราคา/หน่วย (฿)</label><input class="fi" id="im-price" type="number" placeholder="0"></div>
     </div>
-    <div class="fl"><label>ที่เก็บ / Location</label><input class="fi" id="im-loc" placeholder="Rock Garden Store"></div>
+    <div class="fl"><label>ที่เก็บ / Location</label><input class="fi" id="im-loc" placeholder="เช่น โกดัง ชั้น 1 / ห้องเก็บของ"></div>
     <div class="fl"><label>โน้ต</label><textarea class="fta" id="im-note" rows="2" placeholder="ยี่ห้อ รุ่น ขนาด หรือรายละเอียดเพิ่มเติม"></textarea></div>
     <div class="mfoot">
       <button class="btn btn-sm" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(212,64,48,.3);margin-right:auto;display:none;" id="del-item-btn" onclick="deleteItem()">🗑 ลบ</button>
@@ -515,18 +515,6 @@ const CAT_CLASS = {
 
 // ══ SAMPLE DATA ══
 const SAMPLE_ITEMS = [
-  // ── จากบิล HomePro #6938835 — 11/06/69 (รับสาขาเฉวง สำเร็จ) ──
-  {id:'ITM-HP034',sku:'274795',name:'ดาวน์ไลท์ CARINI B0550-WH 5นิ้ว ทรงกลม สีขาว',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:4,minQty:2,unit:'ชิ้น',price:119,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP035',sku:'1081378',name:'ดาวน์ไลท์ CARINI CS16-4 5นิ้ว ทรงกลม สีดำ',cat:'โคมไฟ',icon:'🔆',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:129,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP036',sku:'1082005',name:'ห่วงม่าน MOYA SH0013E สีโครม',cat:'เฟอร์นิเจอร์',icon:'🪝',proj:'Chaweng',qty:2,minQty:1,unit:'ชิ้น',price:49,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — รวม ฿98'},
-  {id:'ITM-HP037',sku:'1268597',name:'แผ่นอเนกประสงค์ HOME LIVING STYLE STILL 90x150 ซม. สีเทา',cat:'อื่นๆ',icon:'🟦',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:139,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP038',sku:'1281117',name:'ดินผสมขุยไผ่ SPRING 5 กก.',cat:'อื่นๆ',icon:'🪴',proj:'Chaweng',qty:1,minQty:1,unit:'ถุง',price:29,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP039',sku:'1292831',name:'แผ่นรองเม้าส์ SNAZZ NOVA 40x100 ซม. สีเขียว',cat:'อื่นๆ',icon:'🖱️',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:269,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP040',sku:'1293781',name:'เสื่อโยคะ SNAZZ LUXE 68x183 ซม. สีน้ำเงิน',cat:'อื่นๆ',icon:'🧘',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:619,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP041',sku:'1295845',name:'หลอด LED CARINI A60 ECOLIFE2 5W Warm White E27 (แพ็ก 4)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:2,minQty:1,unit:'แพ็ก',price:119,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — 1 แพ็ก = 4 หลอด'},
-  {id:'ITM-HP042',sku:'1295876',name:'หลอด LED CARINI A60 ECOLIFE2 7W Cool White E27 (แพ็ก 4)',cat:'โคมไฟ',icon:'💡',proj:'Chaweng',qty:2,minQty:1,unit:'แพ็ก',price:139,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — 1 แพ็ก = 4 หลอด'},
-  {id:'ITM-HP043',sku:'1296840',name:'หัวต่อก๊อกน้ำ MOYA MY ABS-019-1',cat:'ห้องน้ำ',icon:'🚿',proj:'Chaweng',qty:1,minQty:1,unit:'ชิ้น',price:159,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69'},
-  {id:'ITM-HP044',sku:'1298478',name:'พรมพียู HOME LIVING STYLE FINIX 45x70 ซม. สีดำ',cat:'อื่นๆ',icon:'🧹',proj:'Chaweng',qty:4,minQty:1,unit:'ชิ้น',price:269,loc:'Rock Garden Store',note:'HomePro #6938835 11/06/69 — ซื้อ 2 + รับฟรี 2 ชิ้น'},
   // ── จากบิล HomePro 629208 — 17/05/69 เครื่องใช้ไฟฟ้า Airbnb ──
   {id:'ITM-HP020',sku:'2400002244187',name:'ไมโครเวฟ ELECTROLUX EMM20K22B 20L',cat:'เฟอร์นิเจอร์',icon:'📦',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:1790,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
   {id:'ITM-HP021',sku:'2400002866259',name:'กาต้มน้ำไฟฟ้า EKONO EK01 สีเงิน',cat:'เฟอร์นิเจอร์',icon:'☕',proj:'Chaweng',qty:1,minQty:1,unit:'เครื่อง',price:199,loc:'เฉวง Airbnb',note:'HomePro 629208 17/05/69'},
@@ -784,14 +772,13 @@ function openAddItem() {
   currentPhoto=null; showPhotoPreview(null);
   document.getElementById('im-title').textContent='➕ เพิ่มสินค้าใหม่';
   document.getElementById('del-item-btn').style.display='none';
-  ['im-name','im-sku','im-icon','im-note'].forEach(id=>document.getElementById(id).value='');
+  ['im-name','im-sku','im-icon','im-loc','im-note'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('im-qty').value='0';
   document.getElementById('im-min').value='2';
   document.getElementById('im-price').value='0';
   document.getElementById('im-unit').value='ชิ้น';
   document.getElementById('im-cat').value='โคมไฟ';
   document.getElementById('im-proj').value='Chaweng';
-  document.getElementById('im-loc').value='Rock Garden Store';
   document.getElementById('item-ov').classList.add('open');
   setTimeout(()=>document.getElementById('im-name').focus(),100);
 }
