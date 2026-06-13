@@ -259,7 +259,10 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <small>Lipa · Chaweng</small>
   </div>
   <div class="hdr-r">
-    <button class="btn btn-ghost btn-sm" onclick="openScan()">📷 สแกน QR</button>
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">💾 Backup</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">📂 โหลด</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+    <button class="btn btn-ghost btn-sm" onclick="openScan()">📷 สแกน</button>
     <button class="btn btn-primary btn-sm" onclick="openAddItem()">+ สินค้า</button>
   </div>
 </div>
@@ -1009,6 +1012,31 @@ function toast(msg,type){
 }
 
 document.querySelectorAll('.ov').forEach(o=>o.addEventListener('click',e=>{if(e.target===o){stopCamera();o.classList.remove('open');}}));
+
+// ══ BACKUP / RESTORE ══
+function exportData(){
+  const data={version:2,exported:new Date().toISOString(),items:ITEMS,transactions:TXS};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');const d=new Date();
+  a.href=url;a.download=`stock-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;
+  a.click();URL.revokeObjectURL(url);
+  toast(`💾 Backup สำเร็จ — ${ITEMS.length} สินค้า, ${TXS.length} รายการ`,'green');
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!data.items||!Array.isArray(data.items))throw new Error('ไฟล์ไม่ถูกต้อง');
+      if(!confirm(`พบ ${data.items.length} สินค้า, ${(data.transactions||[]).length} รายการ\nBackup เมื่อ: ${data.exported?new Date(data.exported).toLocaleString('th-TH'):'ไม่ระบุ'}\n\nกด OK = แทนที่ข้อมูลทั้งหมด`))return;
+      ITEMS=data.items;TXS=data.transactions||[];
+      save();renderAll();
+      toast(`📂 โหลดสำเร็จ — ${ITEMS.length} สินค้า`,'green');
+    }catch(err){toast('❌ ไฟล์ผิดพลาด: '+err.message,'red');}
+  };
+  reader.readAsText(file);e.target.value='';
+}
 
 // ══ INIT ══
 load();

@@ -278,6 +278,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);min
     <small>🏝️ Koh Samui Renovation</small>
   </div>
   <div class="hdr-r">
+    <button class="btn btn-ghost btn-sm" onclick="exportData()">💾 Backup</button>
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('import-file').click()">📂 โหลด</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
     <button class="btn btn-ghost btn-sm" onclick="openAddCard()">+ งาน</button>
     <button class="btn btn-ghost btn-sm" onclick="openAddPay()">+ จ่ายเงิน</button>
   </div>
@@ -935,6 +938,30 @@ function clearLog(){LOGS=[];save();renderLog();toast('ล้าง log แล้
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function save(){try{localStorage.setItem('dj_tasks',JSON.stringify(TASKS));localStorage.setItem('dj_pays',JSON.stringify(PAYS));localStorage.setItem('dj_logs',JSON.stringify(LOGS));}catch(e){}}
 function load(){try{const t=localStorage.getItem('dj_tasks');const p=localStorage.getItem('dj_pays');const l=localStorage.getItem('dj_logs');if(t)TASKS=JSON.parse(t);if(p)PAYS=JSON.parse(p);if(l)LOGS=JSON.parse(l);}catch(e){}}
+
+function exportData(){
+  const data={version:2,exported:new Date().toISOString(),tasks:TASKS,pays:PAYS,logs:LOGS};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');const d=new Date();
+  a.href=url;a.download=`dashboard-backup-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${String(d.getHours()).padStart(2,'0')}${String(d.getMinutes()).padStart(2,'0')}.json`;
+  a.click();URL.revokeObjectURL(url);
+  toast(`💾 Backup สำเร็จ — ${TASKS.length} งาน, ${PAYS.length} รายการเงิน`,false);
+}
+function importData(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const data=JSON.parse(ev.target.result);
+      if(!data.tasks||!Array.isArray(data.tasks))throw new Error('ไฟล์ไม่ถูกต้อง');
+      if(!confirm(`พบ ${data.tasks.length} งาน, ${(data.pays||[]).length} รายการเงิน\nBackup เมื่อ: ${data.exported?new Date(data.exported).toLocaleString('th-TH'):'ไม่ระบุ'}\n\nกด OK = แทนที่ข้อมูลทั้งหมด`))return;
+      TASKS=data.tasks;PAYS=data.pays||[];LOGS=data.logs||[];
+      save();renderAll();renderLog();
+      toast(`📂 โหลดสำเร็จ — ${TASKS.length} งาน`,false);
+    }catch(err){toast('❌ ไฟล์ผิดพลาด: '+err.message,true);}
+  };
+  reader.readAsText(file);e.target.value='';
+}
 
 let _tt=null;
 function toast(msg,err){const el=document.getElementById('toast'),d=document.getElementById('tdot'),m=document.getElementById('tmsg');clearTimeout(_tt);d.className='td'+(err?' err':'');m.textContent=msg;el.classList.add('show');_tt=setTimeout(()=>el.classList.remove('show'),3000);}
